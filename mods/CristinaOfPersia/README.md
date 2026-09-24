@@ -8,7 +8,7 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 | Tomar una poción | Cristina se convierte un rato en Bullrich borracha (y se tambalea) |
 | La espada (en la mano y en el piso) | El bastón presidencial (puño dorado, borla, contera) |
 | La princesa | Máximo: pelo enrulado, barba, camiseta de Racing de manga corta, jean y zapatillas |
-| Jafar, el visir | Macri: canoso, afeitado y sonriente, traje azul, camisa celeste y corbata amarilla; al entrar en escena suben globos amarillos |
+| Jafar, el visir | Mauricio: canoso, afeitado y sonriente, traje azul, camisa celeste y corbata amarilla; al entrar en escena suben globos amarillos |
 | Los guardias (y el guardia gordo) | Granaderos: morrión con penacho, casaca azul con cuello de color y pantalón blanco |
 | Pociones chica / grande | Mate / termo |
 | Pinches | Palas, muchas palas, con un cartel del FMI |
@@ -32,7 +32,7 @@ Algunas cosas necesitan el `prince` compilado con los cambios de este repo
 - globos amarillos en la intro (`draw_balloons`, src/seg001.c)
 - cartel del FMI en los pinches (`SPIKE_SIGN_IMAGE`, src/seg008.c)
 
-La música de la entrada de Macri es una marcha original (`tools/make_jingle.py`); se puede
+La música de la entrada de Mauricio es una marcha original (`tools/make_jingle.py`); se puede
 reemplazar, ver `music/LEEME.txt`.
 
 Los textos del juego (menú de pausa, "NIVEL 1", "QUEDAN 5 MINUTOS", etc.) están traducidos en el
@@ -54,12 +54,12 @@ python3 tools/make_all.py
 | `make_baton.py` | Bastón (`PRINCE/res735-768` + `res700.pal`) |
 | `make_items.py` | Bastón en el piso, mate, termo y cartel del FMI (`PRINCE/res160-165,174` + `res150.pal`) |
 | `make_maximo.py` | Máximo y el abrazo final (`PV/res801-817`, `res901-930`) |
-| `make_macri.py` | Macri villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
+| `make_macri.py` | Mauricio villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
 | `make_guards.py` | Granaderos: paletas (`PRINCE/res10.bin`) y morrión (`GUARD/res751-784`, `FAT/res751-784`) |
 | `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`; usa fuentes de macOS) |
 | `make_promo.py` | La imagen promocional (`promo.png`), con los sprites del juego |
 | `make_icon.py` | Favicon e íconos de la app web (`webbuild/favicon*`, `icon-*.png`, `apple-touch-icon.png`) |
-| `make_jingle.py` | Marcha de la entrada de Macri (`music/story_3_Jaffar_enters.ogg`; necesita `numpy` y `soundfile`) |
+| `make_jingle.py` | Marcha de la entrada de Mauricio (`music/story_3_Jaffar_enters.ogg`; necesita `numpy` y `soundfile`) |
 | `make_shovels.py` | Palas en lugar de pinches (`VDUNGEON` y `VPALACE/res328-343`) |
 
 ![Cristina of Persia](promo.png)

@@ -15,7 +15,7 @@
 <meta property="og:image" content="https://cristina-de-persia.vercel.app/promo.png">
 <meta property="og:image:width" content="1280">
 <meta property="og:image:height" content="720">
-<meta property="og:image:alt" content="Cristina of Persia: Cristina con el bastón, Macri y Máximo en el palacio">
+<meta property="og:image:alt" content="Cristina of Persia: Cristina con el bastón, Mauricio y Máximo en el palacio">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cristina of Persia">
 <meta name="twitter:description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular.">
@@ -24,7 +24,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Cristina">
+<meta name="apple-mobile-web-app-title" content="Cristina de Persia">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -258,9 +258,9 @@
     <ol>
       <li>Tocá <svg class="share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6v10h12V10h-2"/></svg> <b>Compartir</b> (si no lo ves, está dentro del menú <b>⋯</b>).</li>
       <li>Elegí <b>Agregar a inicio</b>.</li>
-      <li>Abrí <b>Cristina</b> desde el ícono.</li>
+      <li>Abrí <b>Cristina de Persia</b> desde el ícono.</li>
     </ol>
-    <div style="margin-bottom: 14px"><b>¿Ya lo agregaste?</b> Abrilo desde el ícono de <b>Cristina</b> en tu pantalla de inicio.</div>
+    <div style="margin-bottom: 14px"><b>¿Ya lo agregaste?</b> Abrilo desde el ícono de <b>Cristina de Persia</b> en tu pantalla de inicio.</div>
     <button id="tip-ok">Entendido</button>
   </div>
 </div>
@@ -538,7 +538,7 @@
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
-    locateFile: (path) => path + "?v=191170470",
+    locateFile: (path) => path + "?v=32021183",
     preRun: [() => {
       const FS = Module.FS;
       try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
@@ -639,7 +639,7 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js?v=191170470"></script>
+<script async src="prince.js?v=32021183"></script>
 <script>
   // sin conexión y carga instantánea (sobre todo instalado como app)
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {

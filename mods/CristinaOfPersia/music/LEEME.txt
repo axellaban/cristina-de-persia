@@ -1,7 +1,7 @@
-Música de la entrada de Macri
-=============================
+Música de la entrada de Mauricio
+================================
 
-Cuando Macri (el villano) entra en la escena de la intro, el juego pone:
+Cuando Mauricio (el villano) entra en la escena de la intro, el juego pone:
 
     mods/CristinaOfPersia/music/story_3_Jaffar_enters.ogg
 

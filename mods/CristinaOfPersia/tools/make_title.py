@@ -19,24 +19,36 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 SRC = os.path.join(ROOT, "data", "TITLE")
 DST = os.path.join(ROOT, "mods", "CristinaOfPersia", "data", "TITLE")
 FONTS = "/System/Library/Fonts/Supplemental"
+# Dónde buscar las fuentes: macOS, las "core fonts" de Microsoft instaladas en Linux
+# (ttf-mscorefonts-installer) o una carpeta propia en la variable TITLE_FONTS.
+FONT_DIRS = [os.environ.get("TITLE_FONTS", ""), FONTS, "/usr/share/fonts/truetype/msttcorefonts"]
+FONT_NAMES = {"Georgia Bold.ttf": ["Georgia Bold.ttf", "Georgia_Bold.ttf", "georgiab.ttf", "Georgiab.TTF"]}
 
 STORIES = {
-    42: ("E", "n ausencia del Pueblo, el Gran Visir MACRI gobierna con mano "
+    42: ("E", "n ausencia del Pueblo, el Gran Visir MAURICIO gobierna con mano "
               "de hierro y globos amarillos. Sólo un obstáculo lo separa del "
               "trono: el hijo de la Reina, el joven Máximo..."),
     43: ("A", "filiarse al PRO... o morir antes de que termine la hora. Todas "
               "las esperanzas de Máximo están puestas en la mujer que más lo "
               "quiere: su madre. Lo que no sabe es que ella ya está presa en "
-              "los calabozos de Macri..."),
-    44: ("E", "l tirano Macri yace derrotado, sus globos pinchados. En toda la "
+              "los calabozos de Mauricio..."),
+    44: ("E", "l tirano Mauricio yace derrotado, sus globos pinchados. En toda la "
               "tierra el pueblo aclama a Máximo... y a la heroína que lo "
               "rescató. Desde hoy y para siempre se la conocerá como... "
               "CRISTINA OF PERSIA."),
 }
 
 
+def find_font(name):
+    for d in filter(None, FONT_DIRS):
+        for n in FONT_NAMES.get(name, [name]):
+            if os.path.exists(os.path.join(d, n)):
+                return os.path.join(d, n)
+    return None
+
+
 def font(name, size, index=0):
-    return ImageFont.truetype(os.path.join(FONTS, name), size, index=index)
+    return ImageFont.truetype(find_font(name), size, index=index, layout_engine=ImageFont.Layout.BASIC)
 
 
 def wrap(draw, words, fnt, widths):
@@ -154,17 +166,20 @@ def author():
 
 def main():
     os.makedirs(DST, exist_ok=True)
-    author()  # no necesita fuentes del sistema
-    if not os.path.isdir(FONTS):
-        print(f"(sin {FONTS}: sólo se regeneró el crédito del autor)")
-        return
-    # el mismo tamaño de letra en las tres pantallas: el mayor que entre en todas
-    size = next(sz for sz in range(15, 9, -1)
-                if all(layout(r, c, t, sz)[-1] for r, (c, t) in STORIES.items()))
-    for res, (cap, text) in STORIES.items():
-        story(res, cap, text, size)
-    logo()
+    author()     # tipografía propia (title_font.py)
     presents()
+    if find_font("Georgia Bold.ttf"):
+        # el mismo tamaño de letra en las tres pantallas: el mayor que entre en todas
+        size = next(sz for sz in range(15, 9, -1)
+                    if all(layout(r, c, t, sz)[-1] for r, (c, t) in STORIES.items()))
+        for res, (cap, text) in STORIES.items():
+            story(res, cap, text, size)
+    else:
+        print("(sin Georgia: la historia queda como está; ver FONT_DIRS)")
+    if find_font("Herculanum.ttf"):
+        logo()
+    else:
+        print("(sin Herculanum, de macOS: el logo queda como está)")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Música de la entrada de Macri (music/story_3_Jaffar_enters.ogg).
+"""Música de la entrada de Mauricio (music/story_3_Jaffar_enters.ogg).
 
 Una marcha de acto con globos, compuesta para el mod (melodía original, sin
 derechos de terceros): melodía con onda cuadrada, bajo "um-pa", acordes a

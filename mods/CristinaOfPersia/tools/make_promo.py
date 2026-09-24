@@ -2,7 +2,7 @@
 """Imagen promocional (promo.png, 1280x720): la que se ve al compartir el link y
 en la pantalla de carga de la web.
 
-El fondo y el logo del título, Macri con sus globos, Cristina atacando con el
+El fondo y el logo del título, Mauricio con sus globos, Cristina atacando con el
 bastón y Máximo esperando, todo con los sprites del juego (correr antes
 make_kid.py, make_baton.py, make_maximo.py, make_macri.py y make_title.py).
 """
@@ -69,7 +69,7 @@ def main():
     put(canvas, logo, (W - logo.width) // 2, 4 + logo.height)
 
     floor = H - 7
-    # Macri, mirando hacia Cristina, con globos amarillos
+    # Mauricio, mirando hacia Cristina, con globos amarillos
     for bx, by in ((4, 124), (20, 98), (92, 118), (108, 94)):
         put(canvas, sprite("PV", 963), bx, by, CHAR)
     put(canvas, sprite("PV", 851, flip=True), 44, floor, CHAR)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convierte a Jafar (el visir) en Macri, el villano.
+"""Convierte a Jafar (el visir) en Mauricio, el villano.
 
 Aplica a las escenas (data/PV/res851-888) y a la pelea final del nivel 13
 (data/VIZIER/res751-784).
