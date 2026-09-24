@@ -538,7 +538,7 @@
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
-    locateFile: (path) => path + "?v=1105401015",
+    locateFile: (path) => path + "?v=191170470",
     preRun: [() => {
       const FS = Module.FS;
       try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
@@ -548,6 +548,10 @@
         FS.syncfs(true, () => { savesReady = true; Module.removeRunDependency("saves"); });
       } catch (err) { console.warn("sin guardado en el navegador", err); }
     }],
+    onIntroDone() {
+      introSeen = true;
+      try { localStorage.setItem(INTRO_KEY, "1"); } catch (err) {}
+    },
     // 0: título e intro; si no, el nivel que se está jugando
     onGameState(level) {
       const saved = level === 0 ? savedLevel() : 0;
@@ -588,11 +592,44 @@
     print: (t) => console.log(t),
     printErr: (t) => console.warn(t),
   };
+  // ---- que no se apague la pantalla (Wake Lock) ----
+  let wakeLock = null;
+  function keepAwake() {
+    if (!("wakeLock" in navigator) || document.hidden || wakeLock) return Promise.resolve(!!wakeLock);
+    return navigator.wakeLock.request("screen").then((lock) => {
+      wakeLock = lock;
+      lock.addEventListener("release", () => { wakeLock = null; });
+      return true;
+    }).catch(() => false);
+  }
+  // el sistema lo suelta al cambiar de app: se vuelve a pedir al volver (y en cada toque, por las dudas)
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) keepAwake(); });
+  window.addEventListener("pointerup", () => { if (gameStarted && !wakeLock) keepAwake(); }, true);
+  // En la app instalada del iPhone, antes de iOS 18.4, el pedido "funciona" pero la pantalla
+  // se apaga igual: ahí no se puede contar con él.
+  function wakeLockWorks() {
+    if (!("wakeLock" in navigator)) return false;
+    const ios = navigator.userAgent.match(/(iPhone|iPad|iPod).* OS (\d+)_(\d+)/);
+    if (ios && isStandalone) return +ios[2] > 18 || (+ios[2] === 18 && +ios[3] >= 4);
+    return true;
+  }
+
+  // ---- presentación obligatoria ----
+  // Si la pantalla se puede apagar en medio de la intro, la primera vez no se puede saltear
+  // (el juego ignora los toques hasta que termina; "Continuar" sí funciona).
+  const INTRO_KEY = "cristina.presentacion-vista";
+  let introSeen = false;
+  try { introSeen = localStorage.getItem(INTRO_KEY) === "1"; } catch (err) {}
+  function lockIntro() { if (!introSeen && Module._web_lock_intro) Module._web_lock_intro(1); }
+
   function startGame() {
     document.getElementById("loading").style.display = "none";
     Module.canvas.focus();
     gameStarted = true;
+    const awake = keepAwake();  // dentro del toque, como pide Safari
     Module.callMain([]);  // dentro del toque: el audio de SDL nace habilitado
+    if (!wakeLockWorks()) lockIntro();
+    else awake.then((ok) => { if (!ok) lockIntro(); });
     setTimeout(unlockAudio, 0);
     if (wantedToast) setTimeout(() => showToast(wantedToast), 1500);
   }
@@ -602,7 +639,7 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js?v=1105401015"></script>
+<script async src="prince.js?v=191170470"></script>
 <script>
   // sin conexión y carga instantánea (sobre todo instalado como app)
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {

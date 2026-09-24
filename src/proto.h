@@ -637,6 +637,8 @@ void process_events(void);
 void idle(void);
 #ifdef __EMSCRIPTEN__
 void web_game_state(int level);
+void web_intro_done(void);
+extern byte web_intro_locked;
 #endif
 void init_copyprot_dialog(void);
 int showmessage(char *text,int arg_4,void *arg_0);

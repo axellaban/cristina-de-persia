@@ -3810,6 +3810,19 @@ void web_game_state(int level) {
 EMSCRIPTEN_KEEPALIVE void web_continue(void) {
 	last_key_scancode = SDL_SCANCODE_L | WITH_CTRL;
 }
+
+// While set, the title and the intro can't be skipped (only "Continue" goes through).
+// The page sets it the first time, when it can't keep the screen from turning off.
+byte web_intro_locked = 0;
+EMSCRIPTEN_KEEPALIVE void web_lock_intro(int locked) {
+	web_intro_locked = locked;
+}
+
+// The whole presentation was shown: from now on it can be skipped.
+void web_intro_done(void) {
+	web_intro_locked = 0;
+	EM_ASM({ if (Module.onIntroDone) Module.onIntroDone(); });
+}
 #endif
 
 void idle() {

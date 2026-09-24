@@ -552,6 +552,10 @@ int process_key() {
 	/*nothing*/;
 
 	if (start_level < 0) {
+#ifdef __EMSCRIPTEN__
+		// the presentation can't be skipped yet (only "Continue", Ctrl+L, goes through)
+		if (web_intro_locked && key != (SDL_SCANCODE_L | WITH_CTRL)) return 0;
+#endif
 		if (key || control_shift) {
 			#ifdef USE_QUICKSAVE
 			if (key == SDL_SCANCODE_F9) need_quick_load = 1;
@@ -2038,6 +2042,9 @@ void show_title() {
 	free_surface(offscreen_surface);
 	offscreen_surface = NULL; // added
 	release_title_images();
+#ifdef __EMSCRIPTEN__
+	web_intro_done();
+#endif
 	init_game(0);
 }
 
