@@ -385,7 +385,8 @@
   pad.addEventListener("pointercancel", padUp);
 
   // Tocar la pantalla del juego lo maneja SDL (un toque = Enter; con el menú abierto, elige la opción).
-  // Se frenan los clicks de mouse que el navegador inventa después de un toque, que abrirían el menú.
+  // Se frenan los clicks de mouse que el navegador inventa después de un toque (serían un segundo Enter).
+  // El menú sólo se abre con el botón de la hamburguesa (o Esc).
   let lastTouch = 0;
   const stage = document.getElementById("stage");
   stage.addEventListener("pointerdown", (e) => {

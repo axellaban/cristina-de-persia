@@ -3792,7 +3792,13 @@ void process_events() {
 						if (!is_menu_shown) {
 							// A tap on a touch screen is too easy to do by accident to open the menu:
 							// treat it like Enter instead (skip texts, restart after dying).
+#ifdef __EMSCRIPTEN__
+							// On the web the menu has its own button; phones also send mouse clicks
+							// after a touch that SDL can't tell apart from a real mouse.
+							last_key_scancode = SDL_SCANCODE_RETURN;
+#else
 							last_key_scancode = (event.button.which == SDL_TOUCH_MOUSEID) ? SDL_SCANCODE_RETURN : SDL_SCANCODE_BACKSPACE;
+#endif
 						} else {
 							mouse_clicked = true;
 						}
