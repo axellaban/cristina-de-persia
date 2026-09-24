@@ -1,0 +1,58 @@
+# Cristina of Persia
+
+Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
+
+| Original | En el mod |
+|---|---|
+| El príncipe | Cristina: traje azul, pelo largo, banda presidencial |
+| Tomar una poción | Cristina se convierte un rato en Bullrich borracha (y se tambalea) |
+| La espada (en la mano y en el piso) | El bastón presidencial (puño dorado, borla, contera) |
+| La princesa | Máximo: barba, camiseta de Racing, jean y zapatillas |
+| Jafar, el visir | Macri: canoso, bigote, traje azul, corbata amarilla; al entrar en escena suben globos amarillos |
+| Los guardias | Granaderos |
+| Pociones chica / grande | Mate / termo |
+| Pinches | Con un cartel del FMI |
+| Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban Arzubi" |
+
+## Jugar
+
+En `SDLPoP.ini`:
+
+```
+levelset = CristinaOfPersia
+```
+
+y abrir `prince` (o `Jugar_Prince_of_Persia.command` en Mac).
+
+Algunas cosas necesitan el `prince` compilado con los cambios de este repo
+(con un SDLPoP sin cambios el mod igual funciona, pero sin estos extras):
+
+- bastón sólo para Cristina, espada para los guardias (`add_sword_to_objtable`, src/seg006.c)
+- Bullrich al tomar una poción (`id_chtab_10_kid_alt`, `kid_alt_time`)
+- globos amarillos en la intro (`draw_balloons`, src/seg001.c)
+- cartel del FMI en los pinches (`SPIKE_SIGN_IMAGE`, src/seg008.c)
+
+La música de la entrada de Macri se agrega aparte: ver `music/LEEME.txt`.
+
+## Regenerar los gráficos
+
+Todo se genera por script a partir de los originales de `data/` (Python 3 + Pillow):
+
+```
+python3 tools/make_all.py
+```
+
+| Script | Qué genera |
+|---|---|
+| `make_kid.py` | Cristina (`KID/res401-619`) |
+| `make_bullrich.py` | Bullrich borracha (`KID/res1401-1619` + `res1400.pal`) |
+| `make_baton.py` | Bastón (`PRINCE/res735-768` + `res700.pal`) |
+| `make_items.py` | Bastón en el piso, mate, termo y cartel del FMI (`PRINCE/res160-165,174` + `res150.pal`) |
+| `make_maximo.py` | Máximo y el abrazo final (`PV/res801-817`, `res901-930`) |
+| `make_macri.py` | Macri villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
+| `make_guards.py` | Paletas de los Granaderos (`PRINCE/res10.bin`) |
+| `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`) |
+
+![Cristina of Persia](promo.png)
+
+Los créditos del juego original (Jordan Mechner y equipo) se mantienen.

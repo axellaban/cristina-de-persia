@@ -1,0 +1,11 @@
+{
+  "name": "Cristina of Persia",
+  "short_name": "Cristina",
+  "description": "Parodia argentina de Prince of Persia",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [{ "src": "icon.png", "sizes": "any", "type": "image/png" }]
+}

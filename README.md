@@ -1,3 +1,40 @@
+# Cristina of Persia
+
+Parodia argentina de *Prince of Persia*, hecha sobre [SDLPoP](https://github.com/NagyD/SDLPoP).
+A game by Axel Laban Arzubi.
+
+![Cristina of Persia](mods/CristinaOfPersia/promo.png)
+
+- **Jugar en el navegador o en el celular (en horizontal):** la carpeta `web/` es el sitio listo para publicar
+  (Vercel la sirve tal cual, ver `vercel.json`).
+- **Jugar en la compu:** compilar `prince` (ver más abajo) y abrirlo; `SDLPoP.ini` ya apunta al mod
+  (`levelset = CristinaOfPersia`).
+- **Cómo está hecho el mod** (personajes, scripts que generan los gráficos, cambios al código):
+  [`mods/CristinaOfPersia/README.md`](mods/CristinaOfPersia/README.md).
+
+### Versión web
+
+Se compila a WebAssembly con Emscripten (`brew install emscripten`):
+
+```
+sh webbuild/build.sh
+```
+
+Eso deja en `web/` el `index.html` (con controles táctiles), `prince.js`, `prince.wasm` y `prince.data`.
+Para probarla localmente: `python3 -m http.server 8000 --directory web` y abrir http://localhost:8000.
+
+### Controles
+
+| Teclado | Celular | Acción |
+|---|---|---|
+| Flechas | Cruceta (también en diagonal) | Moverse, saltar, agacharse |
+| Shift | Botón *acción* | Agarrarse, tomar pociones, pelear |
+| ↑ | Botón *salto* | Saltar |
+| Esc | *pausa* | Pausa |
+| Enter | *empezar* / tocar la pantalla | Empezar, pasar textos |
+
+---
+
 # SDLPoP
 
 An open-source port of Prince of Persia, based on the disassembly of the DOS version, extended with new features.

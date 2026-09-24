@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Cristina of Persia</title>
+<meta name="description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular (en horizontal).">
+<meta property="og:title" content="Cristina of Persia">
+<meta property="og:description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular.">
+<meta property="og:image" content="promo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root {
+    --btn: rgba(255, 255, 255, 0.14);
+    --btn-on: rgba(255, 214, 0, 0.45);
+    --line: rgba(255, 255, 255, 0.35);
+  }
+  html, body {
+    margin: 0; height: 100%; background: #000; color: #eee; overflow: hidden;
+    font-family: Georgia, "Times New Roman", serif;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    touch-action: none; overscroll-behavior: none;
+  }
+  #stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas#canvas {
+    display: block; image-rendering: pixelated; image-rendering: crisp-edges;
+    /* 320x200 (16:10) escalado para que entre entero */
+    /* !important: SDL le pone su propio tamaño al canvas */
+    width: min(100vw, 160vh) !important; height: min(62.5vw, 100vh) !important;
+    outline: none;
+  }
+  /* controles táctiles: sólo en pantallas táctiles */
+  #controls { display: none; }
+  body.touch #controls { display: block; }
+  .pad {
+    position: fixed; left: max(14px, env(safe-area-inset-left)); bottom: 14px;
+    width: 38vh; height: 38vh; min-width: 130px; min-height: 130px; border-radius: 50%;
+    background: var(--btn); border: 2px solid var(--line); touch-action: none;
+  }
+  .pad .knob {
+    position: absolute; left: 50%; top: 50%; width: 36%; height: 36%;
+    margin: -18% 0 0 -18%; border-radius: 50%; background: rgba(255,255,255,0.3);
+    transition: transform 0.05s;
+  }
+  .pad .arrow { position: absolute; font-size: 5vh; opacity: 0.55; }
+  .pad .up { top: 4%; left: 50%; transform: translateX(-50%); }
+  .pad .down { bottom: 4%; left: 50%; transform: translateX(-50%); }
+  .pad .left { left: 6%; top: 50%; transform: translateY(-50%); }
+  .pad .right { right: 6%; top: 50%; transform: translateY(-50%); }
+  .btn {
+    position: fixed; border-radius: 50%; background: var(--btn); border: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 3.4vh; line-height: 1.05; color: #fff; touch-action: none;
+  }
+  .btn.on, .pad.on { background: var(--btn-on); }
+  #btn-action { right: max(18px, env(safe-area-inset-right)); bottom: 16px; width: 22vh; height: 22vh; min-width: 80px; min-height: 80px; }
+  #btn-jump { right: calc(max(18px, env(safe-area-inset-right)) + 24vh); bottom: 10vh; width: 16vh; height: 16vh; min-width: 60px; min-height: 60px; }
+  .small {
+    position: fixed; top: 10px; padding: 6px 12px; border-radius: 16px; font-size: 14px;
+    background: var(--btn); border: 1px solid var(--line); color: #fff;
+  }
+  #btn-pause { right: max(12px, env(safe-area-inset-right)); }
+  #btn-full { right: calc(max(12px, env(safe-area-inset-right)) + 90px); }
+  #btn-enter { left: max(12px, env(safe-area-inset-left)); }
+
+  /* carga */
+  #loading {
+    position: fixed; inset: 0; display: flex; flex-direction: column; gap: 18px;
+    align-items: center; justify-content: center; background: #000 url(promo.png) center/cover no-repeat;
+  }
+  #loading .box { background: rgba(0,0,0,0.72); padding: 18px 26px; border-radius: 12px; text-align: center; }
+  #loading h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: 1px; }
+  #loading p { margin: 6px 0; font-size: 15px; opacity: 0.85; }
+  #bar { width: 240px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin: 10px auto 0; }
+  #bar div { height: 100%; width: 0; background: #ffd600; transition: width 0.2s; }
+  #start {
+    display: none; margin-top: 12px; font: inherit; font-size: 18px; padding: 10px 26px;
+    border-radius: 24px; border: 0; background: #ffd600; color: #000; cursor: pointer;
+  }
+
+  /* girá el celular */
+  #rotate {
+    display: none; position: fixed; inset: 0; background: #000; z-index: 10;
+    flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px;
+  }
+  #rotate .phone { font-size: 64px; animation: turn 1.6s ease-in-out infinite; }
+  @keyframes turn { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+  @media (orientation: portrait) {
+    body.touch #rotate { display: flex; }
+  }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas></div>
+
+<div id="controls" aria-hidden="true">
+  <div class="pad" id="pad">
+    <span class="arrow up">▲</span><span class="arrow down">▼</span>
+    <span class="arrow left">◀</span><span class="arrow right">▶</span>
+    <div class="knob" id="knob"></div>
+  </div>
+  <div class="btn" id="btn-jump" data-key="ArrowUp">salto</div>
+  <div class="btn" id="btn-action" data-key="ShiftLeft">acción</div>
+  <div class="small" id="btn-enter" data-key="Enter">empezar</div>
+  <div class="small" id="btn-full">pantalla completa</div>
+  <div class="small" id="btn-pause" data-key="Escape">pausa</div>
+</div>
+
+<div id="loading">
+  <div class="box">
+    <h1>Cristina of Persia</h1>
+    <p>Una parodia argentina · a game by Axel Laban Arzubi</p>
+    <div id="bar"><div></div></div>
+    <p id="status">Cargando...</p>
+    <button id="start">Jugar</button>
+    <p class="hint" id="hint"></p>
+  </div>
+</div>
+
+<div id="rotate">
+  <div class="phone">📱</div>
+  <p>Girá el celular para jugar</p>
+</div>
+
+<script>
+  "use strict";
+  const isTouch = matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+  if (isTouch) document.body.classList.add("touch");
+  document.getElementById("hint").textContent = isTouch
+    ? "Cruceta: moverse (en diagonal, saltar hacia adelante) · acción: agarrar, tomar, pelear"
+    : "Flechas: moverse · Shift: acción · Esc: pausa";
+
+  // ---- teclado virtual: los toques se convierten en teclas para el juego ----
+  const KEYS = {
+    ArrowUp: { key: "ArrowUp", keyCode: 38 },
+    ArrowDown: { key: "ArrowDown", keyCode: 40 },
+    ArrowLeft: { key: "ArrowLeft", keyCode: 37 },
+    ArrowRight: { key: "ArrowRight", keyCode: 39 },
+    ShiftLeft: { key: "Shift", keyCode: 16 },
+    Enter: { key: "Enter", keyCode: 13 },
+    Escape: { key: "Escape", keyCode: 27 },
+  };
+  const held = new Map(); // código -> cantidad de fuentes que lo mantienen apretado
+  function sendKey(code, down) {
+    const k = KEYS[code];
+    const ev = new KeyboardEvent(down ? "keydown" : "keyup", {
+      key: k.key, code, bubbles: true, cancelable: true,
+    });
+    for (const prop of ["keyCode", "which"]) Object.defineProperty(ev, prop, { get: () => k.keyCode });
+    window.dispatchEvent(ev);
+  }
+  function press(code) {
+    const n = held.get(code) || 0;
+    held.set(code, n + 1);
+    if (n === 0) sendKey(code, true);
+  }
+  function release(code) {
+    const n = held.get(code) || 0;
+    if (n <= 1) { held.delete(code); if (n === 1) sendKey(code, false); }
+    else held.set(code, n - 1);
+  }
+  function tap(code) { press(code); setTimeout(() => release(code), 90); }
+
+  // botones
+  for (const el of document.querySelectorAll("[data-key]")) {
+    const code = el.dataset.key;
+    const isTap = el.classList.contains("small");
+    el.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      unlockAudio();
+      if (isTap) { tap(code); return; }
+      el.setPointerCapture(e.pointerId);
+      el.classList.add("on");
+      press(code);
+    });
+    const up = (e) => {
+      if (isTap || !el.classList.contains("on")) return;
+      el.classList.remove("on");
+      release(code);
+    };
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+  }
+
+  // cruceta de 8 direcciones
+  const pad = document.getElementById("pad"), knob = document.getElementById("knob");
+  let padKeys = new Set();
+  function setPad(keys) {
+    for (const k of padKeys) if (!keys.has(k)) release(k);
+    for (const k of keys) if (!padKeys.has(k)) press(k);
+    padKeys = keys;
+  }
+  function padMove(e) {
+    const r = pad.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const dist = Math.hypot(dx, dy), max = r.width / 2;
+    const keys = new Set();
+    if (dist > max * 0.22) {
+      const a = Math.atan2(dy, dx) * 180 / Math.PI; // 0 = derecha, 90 = abajo
+      const sector = Math.round(((a + 360) % 360) / 45) % 8;
+      const dirs = [["ArrowRight"], ["ArrowRight", "ArrowDown"], ["ArrowDown"], ["ArrowLeft", "ArrowDown"],
+                    ["ArrowLeft"], ["ArrowLeft", "ArrowUp"], ["ArrowUp"], ["ArrowRight", "ArrowUp"]][sector];
+      dirs.forEach((d) => keys.add(d));
+    }
+    setPad(keys);
+    const k = Math.min(dist, max * 0.6) / (dist || 1);
+    knob.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+  }
+  pad.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); unlockAudio();
+    pad.setPointerCapture(e.pointerId); pad.classList.add("on"); padMove(e);
+  });
+  pad.addEventListener("pointermove", (e) => { if (pad.classList.contains("on")) padMove(e); });
+  const padUp = () => { pad.classList.remove("on"); setPad(new Set()); knob.style.transform = ""; };
+  pad.addEventListener("pointerup", padUp);
+  pad.addEventListener("pointercancel", padUp);
+
+  // tocar la pantalla del juego = "tecla cualquiera" (títulos, textos, continuar)
+  document.getElementById("canvas").addEventListener("pointerdown", (e) => {
+    unlockAudio();
+    if (isTouch) { e.preventDefault(); tap("Enter"); }
+  });
+
+  // pantalla completa y horizontal
+  document.getElementById("btn-full").addEventListener("pointerdown", (e) => { e.preventDefault(); goFullscreen(); });
+  function goFullscreen() {
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req && !document.fullscreenElement) {
+      Promise.resolve(req.call(el)).then(() => {
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {});
+      }).catch(() => {});
+    }
+  }
+
+  // el audio del navegador sólo arranca después de un toque
+  function unlockAudio() {
+    try {
+      const ctx = Module.SDL2 && Module.SDL2.audioContext;
+      if (ctx && ctx.state !== "running") ctx.resume();
+    } catch (err) {}
+  }
+
+  // si la página pierde el foco, se sueltan todas las teclas
+  window.addEventListener("blur", () => { for (const code of [...held.keys()]) { held.set(code, 1); release(code); } });
+
+  // ---- Emscripten ----
+  const bar = document.querySelector("#bar div"), status = document.getElementById("status");
+  const startBtn = document.getElementById("start");
+  var Module = {
+    canvas: document.getElementById("canvas"),
+    noInitialRun: true,
+    setStatus(text) {
+      const m = text && text.match(/\((\d+(\.\d+)?)\/(\d+)\)/);
+      if (m) bar.style.width = (100 * m[1] / m[3]) + "%";
+      if (text) status.textContent = text.replace(/\(.*\)/, "").replace("Downloading data...", "Descargando...") || "Cargando...";
+    },
+    onRuntimeInitialized() {
+      bar.style.width = "100%";
+      status.textContent = "¡Listo!";
+      startBtn.style.display = "inline-block";
+    },
+    print: (t) => console.log(t),
+    printErr: (t) => console.warn(t),
+  };
+  // SDL le cambia el título a la pestaña; dejamos el del juego
+  new MutationObserver(() => {
+    if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
+  }).observe(document.querySelector("title"), { childList: true });
+  startBtn.addEventListener("click", () => {
+    document.getElementById("loading").style.display = "none";
+    if (isTouch) goFullscreen();
+    Module.canvas.focus();
+    Module.callMain([]);
+    setTimeout(unlockAudio, 300);
+  });
+</script>
+<script async src="prince.js"></script>
+</body>
+</html>
