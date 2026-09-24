@@ -32,7 +32,12 @@ Algunas cosas necesitan el `prince` compilado con los cambios de este repo
 - globos amarillos en la intro (`draw_balloons`, src/seg001.c)
 - cartel del FMI en los pinches (`SPIKE_SIGN_IMAGE`, src/seg008.c)
 
-La música de la entrada de Macri se agrega aparte: ver `music/LEEME.txt`.
+La música de la entrada de Macri es una marcha original (`tools/make_jingle.py`); se puede
+reemplazar, ver `music/LEEME.txt`.
+
+Los textos del juego (menú de pausa, "NIVEL 1", "QUEDAN 5 MINUTOS", etc.) están traducidos en el
+código (`src/`). Van sin tildes ni ñ porque las fuentes del juego no las tienen. Las opciones
+técnicas dentro de "OPCIONES" siguen en inglés.
 
 ## Regenerar los gráficos
 
@@ -52,6 +57,7 @@ python3 tools/make_all.py
 | `make_macri.py` | Macri villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
 | `make_guards.py` | Paletas de los Granaderos (`PRINCE/res10.bin`) |
 | `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`) |
+| `make_jingle.py` | Marcha de la entrada de Macri (`music/story_3_Jaffar_enters.ogg`; necesita `numpy` y `soundfile`) |
 | `make_shovels.py` | Palas en lugar de pinches (`VDUNGEON` y `VPALACE/res328-343`) |
 
 ![Cristina of Persia](promo.png)

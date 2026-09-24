@@ -1,12 +1,19 @@
 Música de la entrada de Macri
 =============================
 
-Cuando Macri (el villano) entra en la escena de la intro, el juego busca:
+Cuando Macri (el villano) entra en la escena de la intro, el juego pone:
 
     mods/CristinaOfPersia/music/story_3_Jaffar_enters.ogg
 
-Poné ahí el fragmento que quieras (por ejemplo, el de Tan Biónica), en formato
-OGG. Unos 10 segundos alcanzan: es lo que dura la entrada.
+El que viene con el mod es una marcha de acto compuesta para el juego (melodía
+original, sin derechos de terceros), generada con:
+
+    python3 mods/CristinaOfPersia/tools/make_jingle.py
+
+Se puede reemplazar por otro fragmento en formato OGG con el mismo nombre.
+Unos 10 segundos alcanzan: es lo que dura la entrada. Ojo: si es un tema
+comercial (por ejemplo, uno de Tan Biónica), no conviene publicarlo en la
+versión web, porque es de acceso público y puede haber reclamos por derechos.
 
 Para convertir un MP3 a OGG, con ffmpeg:
 

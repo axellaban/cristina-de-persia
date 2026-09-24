@@ -14,6 +14,8 @@ mods/*/
 # ...salvo el mod de este repo (sin la música, que tiene derechos de autor)
 !mods/CristinaOfPersia/
 mods/CristinaOfPersia/music/*.ogg
+# ...salvo la marcha original del mod (tools/make_jingle.py)
+!mods/CristinaOfPersia/music/story_3_Jaffar_enters.ogg
 mods/CristinaOfPersia/PRINCE.HOF
 mods/CristinaOfPersia/*.SAV
 
