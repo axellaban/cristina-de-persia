@@ -519,8 +519,8 @@
     "encontró una caja con tres viejos disquetes de Apple II.\n\n" +
     "Para no destruir los frágiles discos, archivistas expertos tuvieron que usar hardware " +
     "especializado para extraer los datos magnéticos. Tras este exitoso rescate, Mechner subió " +
-    "inmediatamente el código a GitHub para que jamás volviera a perderse.\n\n" +
-    "En 2026 un Argentino agarró el código, el resto es historia.";
+    "inmediatamente el código a GitHub para que jamás volviera a perderse.";
+  const STORY_END = "En 2026 un Argentino agarró el código, el resto es historia."; // en blanco
   // corta en palabras para que cada renglón entre en el ancho (como find_linebreak)
   function wrap(text, width) {
     const out = [];
@@ -544,7 +544,10 @@
     status.textContent = line;
     const portrait = innerHeight > innerWidth;
     const W = portrait ? 184 : 320;
-    const lines = wrap(STORY, W - 8).map((t) => [t, GRAY]).concat([["", GRAY], [line, WHITE]]);
+    // el texto de estado (cargando / tocá para jugar) no se muestra: sólo lo leen los lectores
+    // de pantalla; tocar en cualquier lado arranca igual
+    const lines = wrap(STORY, W - 8).map((t) => [t, GRAY]).concat([["", GRAY]],
+      wrap(STORY_END, W - 8).map((t) => [t, WHITE]));
     const height = FONT.line * lines.length - 1;
     const H = portrait ? Math.max(200, height + 24) : 200;
     if (splash.width !== W || splash.height !== H) { splash.width = W; splash.height = H; }
