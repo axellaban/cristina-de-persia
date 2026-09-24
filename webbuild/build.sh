@@ -35,5 +35,6 @@ cp webbuild/index.html web/index.html
 cp webbuild/manifest.json web/manifest.json
 cp mods/CristinaOfPersia/promo.png web/promo.png
 cp data/icon.png web/icon.png
+cp webbuild/icon-192.png webbuild/icon-512.png webbuild/apple-touch-icon.png web/
 rm -rf "$STAGE"
 ls -la web
