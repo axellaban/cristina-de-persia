@@ -43,6 +43,9 @@ void init_game(int level) {
 		hitp_beg_lev = custom->start_hitp;      // 3
 	}
 	need_level1_music = (level == /*1*/ custom->intro_music_level);
+#ifdef __EMSCRIPTEN__
+	if (level != 0) web_game_state(level); // level 0 is the demo shown on the title screen
+#endif
 	play_level(level);
 }
 
@@ -102,6 +105,16 @@ void play_level(int level_number) {
 		Guard.charid = charid_2_guard;
 		Guard.direction = dir_56_none;
 		do_startpos();
+#ifdef __EMSCRIPTEN__
+		// Web: remember the level reached, so the page can offer "Continue" (there is no Ctrl+G on a phone).
+		if (!demo_mode && current_level >= 2 && current_level <= 13
+#ifdef USE_REPLAY
+			&& !recording && !replaying
+#endif
+		) {
+			write_save_file();
+		}
+#endif
 		have_sword = /*(level_number != 1)*/ (level_number == 0 || level_number >= custom->have_sword_from_level);
 		find_start_level_door();
 		// busy waiting?

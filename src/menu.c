@@ -81,17 +81,24 @@ enum pause_menu_item_ids {
 };
 
 pause_menu_item_type pause_menu_items[] = {
-		{.id = PAUSE_MENU_RESUME,        .text = "RESUME"},
+		{.id = PAUSE_MENU_RESUME,        .text = "SEGUIR JUGANDO"},
 		// TODO: Add a cheats menu, where you can choose a cheat from a list?
 		/*{.id = PAUSE_MENU_CHEATS,        .text = "CHEATS", .required = &cheats_enabled},*/
 #ifdef USE_QUICKSAVE // TODO: If quicksave is disabled, show regular save/load instead?
-		{.id = PAUSE_MENU_SAVE_GAME,     .text = "QUICKSAVE (F6)"},
-		{.id = PAUSE_MENU_LOAD_GAME,     .text = "QUICKLOAD (F9)"},
+#ifdef __EMSCRIPTEN__
+		{.id = PAUSE_MENU_SAVE_GAME,     .text = "GUARDAR"},
+		{.id = PAUSE_MENU_LOAD_GAME,     .text = "CARGAR"},
+#else
+		{.id = PAUSE_MENU_SAVE_GAME,     .text = "GUARDAR (F6)"},
+		{.id = PAUSE_MENU_LOAD_GAME,     .text = "CARGAR (F9)"},
 #endif
-		{.id = PAUSE_MENU_RESTART_LEVEL, .text = "RESTART LEVEL"},
-		{.id = PAUSE_MENU_SETTINGS,      .text = "SETTINGS"},
-		{.id = PAUSE_MENU_RESTART_GAME,  .text = "RESTART GAME"},
-		{.id = PAUSE_MENU_QUIT_GAME,     .text = "QUIT GAME"},
+#endif
+		{.id = PAUSE_MENU_RESTART_LEVEL, .text = "REINICIAR NIVEL"},
+		{.id = PAUSE_MENU_SETTINGS,      .text = "OPCIONES"},
+		{.id = PAUSE_MENU_RESTART_GAME,  .text = "EMPEZAR DE NUEVO"},
+#ifndef __EMSCRIPTEN__ // in the browser, quitting would just leave a black page
+		{.id = PAUSE_MENU_QUIT_GAME,     .text = "SALIR"},
+#endif
 };
 
 int hovering_pause_menu_item = PAUSE_MENU_RESUME;
@@ -113,11 +120,11 @@ enum menu_dialog_ids {
 
 pause_menu_item_type settings_menu_items[] = {
 		{.id = SETTINGS_MENU_GENERAL, .text = "GENERAL"},
-		{.id = SETTINGS_MENU_GAMEPLAY, .text = "GAMEPLAY"},
-		{.id = SETTINGS_MENU_VISUALS, .text = "VISUALS"},
+		{.id = SETTINGS_MENU_GAMEPLAY, .text = "JUEGO"},
+		{.id = SETTINGS_MENU_VISUALS, .text = "IMAGEN"},
 		{.id = SETTINGS_MENU_MODS, .text = "MODS"},
-		{.id = SETTINGS_MENU_CONTROLS, .text = "CONTROLS"},
-		{.id = SETTINGS_MENU_BACK, .text = "BACK"},
+		{.id = SETTINGS_MENU_CONTROLS, .text = "CONTROLES"},
+		{.id = SETTINGS_MENU_BACK, .text = "VOLVER"},
 };
 int active_settings_subsection = 0;
 int highlighted_settings_subsection = 0;
@@ -1295,7 +1302,7 @@ void pause_menu_clicked(pause_menu_item_type* item) {
 			break;
 		case PAUSE_MENU_QUIT_GAME:
 			current_dialog_box = DIALOG_CONFIRM_QUIT;
-			current_dialog_text = "Quit SDLPoP?";
+			current_dialog_text = "Salir del juego?";
 			break;
 		case SETTINGS_MENU_GENERAL:
 		case SETTINGS_MENU_GAMEPLAY:
@@ -1656,9 +1663,9 @@ void draw_setting(setting_type* setting, rect_type* parent, int* y_offset, int i
 
 		int OFF_color = (setting_enabled) ? unselected_color : selected_color;
 		int ON_color = (setting_enabled) ? selected_color : unselected_color;
-		show_text_with_color(&text_rect, halign_right, valign_top, "ON", ON_color);
+		show_text_with_color(&text_rect, halign_right, valign_top, "SI", ON_color);
 		text_rect.right -= 15;
-		show_text_with_color(&text_rect, halign_right, valign_top, "OFF", OFF_color);
+		show_text_with_color(&text_rect, halign_right, valign_top, "NO", OFF_color);
 
 	} else if (setting->style == SETTING_STYLE_NUMBER && !disabled) {
 		int value = get_setting_value(setting);
@@ -1709,7 +1716,7 @@ void draw_setting(setting_type* setting, rect_type* parent, int* y_offset, int i
 				if (setting->id == SETTING_RESET_ALL_SETTINGS) {
 					play_menu_sound(sound_22_loose_shake_3);
 					current_dialog_box = DIALOG_RESTORE_DEFAULT_SETTINGS;
-					current_dialog_text = "Restore all settings to their default values?";
+					current_dialog_text = "Volver todas las opciones a como venian?";
 				} else if (setting->id == SETTING_LEVEL_SETTINGS) {
 					play_menu_sound(sound_22_loose_shake_3);
 					current_dialog_box = DIALOG_SELECT_LEVEL;
@@ -1780,7 +1787,7 @@ void draw_settings_area(settings_area_type* settings_area) {
 	if (active_settings_subsection == SETTINGS_MENU_LEVEL_CUSTOMIZATION) {
 		start_y_offset = 15;
 		char level_text[16];
-		snprintf(level_text, sizeof(level_text), "LEVEL %d", menu_current_level);
+		snprintf(level_text, sizeof(level_text), "NIVEL %d", menu_current_level);
 		show_text_with_color(&settings_area_rect, halign_center, valign_top, level_text, color_15_brightwhite);
 	}
 
@@ -2003,8 +2010,8 @@ void draw_confirmation_dialog(int which_dialog, const char* text) {
 				cancel_text_color = color_15_brightwhite;
 			}
 			draw_rect(highlight_rect, color_8_darkgray);
-			show_text_with_color(&ok_text_rect, halign_center, valign_middle, "OK", ok_text_color);
-			show_text_with_color(&cancel_text_rect, halign_center, valign_middle, "Cancel", cancel_text_color);
+			show_text_with_color(&ok_text_rect, halign_center, valign_middle, "SI", ok_text_color);
+			show_text_with_color(&cancel_text_rect, halign_center, valign_middle, "NO", cancel_text_color);
 			update_screen();
 		}
 

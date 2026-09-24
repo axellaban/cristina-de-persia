@@ -1380,7 +1380,7 @@ void play_kid() {
 					current_level != 15 // no message if died on potions level
 				) {
 					text_time_remaining = text_time_total = 288;
-					display_text_bottom("Press Button to Continue");
+					display_text_bottom("Toca o apreta una tecla");
 				} else {
 					text_time_remaining = text_time_total = 36;
 				}

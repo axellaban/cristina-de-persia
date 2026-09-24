@@ -596,7 +596,7 @@ void add_replay_move() {
 		saved_random_seed = random_seed;
 		seed_was_init = 1;
 		savestate_to_buffer(); // create a savestate in memory
-		display_text_bottom("RECORDING");
+		display_text_bottom("GRABANDO");
 		text_time_total = 24;
 		text_time_remaining = 24;
 	}
@@ -623,9 +623,9 @@ void add_replay_move() {
 void stop_recording() {
 	recording = 0;
 	if (save_recorded_replay_dialog()) {
-		display_text_bottom("REPLAY SAVED");
+		display_text_bottom("VIDEO GUARDADO");
 	} else {
-		display_text_bottom("REPLAY CANCELED");
+		display_text_bottom("VIDEO CANCELADO");
 	}
 	text_time_total = 24;
 	text_time_remaining = 24;

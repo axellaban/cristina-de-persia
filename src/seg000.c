@@ -493,9 +493,9 @@ void check_quick_op() {
 	if (!enable_quicksave) return;
 	if (need_quick_save) {
 		if ((!is_feather_fall || fixes->fix_quicksave_during_feather) && quick_save()) {
-			display_text_bottom("QUICKSAVE");
+			display_text_bottom("PARTIDA GUARDADA");
 		} else {
-			display_text_bottom("NO QUICKSAVE");
+			display_text_bottom("NO SE PUDO GUARDAR");
 		}
 		need_quick_save = 0;
 		text_time_total = 24;
@@ -510,9 +510,9 @@ void check_quick_op() {
 #endif
 */
 		if (quick_load()) {
-			display_text_bottom("QUICKLOAD");
+			display_text_bottom("PARTIDA CARGADA");
 		} else {
-			display_text_bottom("NO QUICKLOAD");
+			display_text_bottom("NO HAY PARTIDA GUARDADA");
 		}
 		need_quick_load = 0;
 		text_time_total = 24;
@@ -625,18 +625,18 @@ int process_key() {
 		break;
 		case SDL_SCANCODE_J | WITH_CTRL: // Ctrl+J
 			if ((sound_flags & sfDigi) && sound_mode == smTandy) {
-				answer_text = "JOYSTICK UNAVAILABLE";
+				answer_text = "JOYSTICK NO DISPONIBLE";
 			} else {
 				if (set_joy_mode()) {
-					answer_text = "JOYSTICK MODE";
+					answer_text = "MODO JOYSTICK";
 				} else {
-					answer_text = "JOYSTICK NOT FOUND";
+					answer_text = "NO HAY JOYSTICK";
 				}
 			}
 			need_show_text = 1;
 		break;
 		case SDL_SCANCODE_K | WITH_CTRL: // Ctrl+K
-			answer_text = "KEYBOARD MODE";
+			answer_text = "MODO TECLADO";
 			is_joyst_mode = 0;
 			is_keyboard_mode = 1;
 			need_show_text = 1;
@@ -655,9 +655,9 @@ int process_key() {
 		break;
 		case SDL_SCANCODE_S | WITH_CTRL: // Ctrl+S
 			turn_sound_on_off((!is_sound_on) * 15);
-			answer_text = "SOUND OFF";
+			answer_text = "SONIDO APAGADO";
 			if (is_sound_on) {
-				answer_text = "SOUND ON";
+				answer_text = "SONIDO PRENDIDO";
 			}
 			//
 			need_show_text = 1;
@@ -983,7 +983,7 @@ void draw_game_frame() {
 					erase_bottom_text(0);
 				} else {
 					if (blink_frame == 3) {
-						display_text_bottom("Press Button to Continue");
+						display_text_bottom("Toca o apreta una tecla");
 						play_sound_from_buffer(sound_pointers[sound_38_blink]); // press button blink
 					}
 				}
@@ -1727,7 +1727,7 @@ int do_paused() {
 				check_sound_playing()) {
 			stop_sounds();
 		}
-		display_text_bottom("GAME PAUSED");
+		display_text_bottom("JUEGO EN PAUSA");
 #ifdef USE_MENU
 		if (enable_pause_menu || is_menu_shown) {
 			draw_menu();
@@ -1940,6 +1940,9 @@ const rect_type rect_titles = {106,24,195,296};
 
 // seg000:17E6
 void show_title() {
+#ifdef __EMSCRIPTEN__
+	web_game_state(0);
+#endif
 	load_opt_sounds(sound_50_story_2_princess, sound_55_story_1_absence); // main theme, story, princess door
 	dont_reset_time = 0;
 	if(offscreen_surface) free_surface(offscreen_surface); // missing in original
@@ -2153,8 +2156,8 @@ const char* get_save_path(char* custom_path_buffer, size_t max_len) {
 	return get_writable_file_path(custom_path_buffer, max_len, save_file /*PRINCE.SAV*/ );
 }
 
-// seg000:1D45
-void save_game() {
+// Writes PRINCE.SAV (level, remaining time and hit points), without any message.
+bool write_save_file() {
 	word success = 0;
 	char custom_save_path[POP_MAX_PATH];
 	const char* save_path = get_save_path(custom_save_path, sizeof(custom_save_path));
@@ -2178,11 +2181,15 @@ void save_game() {
 		perror("save_game: fopen");
 		printf("Tried to open for writing: %s\n", save_path);
 	}
+	return success;
+}
 
-	if (success) {
-		display_text_bottom("GAME SAVED");
+// seg000:1D45
+void save_game() {
+	if (write_save_file()) {
+		display_text_bottom("PARTIDA GUARDADA");
 	} else {
-		display_text_bottom("UNABLE TO SAVE GAME");
+		display_text_bottom("NO SE PUDO GUARDAR");
 		//play_sound_from_buffer(&sound_cant_save);
 	}
 	text_time_remaining = 24;

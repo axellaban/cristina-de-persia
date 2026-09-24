@@ -63,6 +63,7 @@ void draw_full_image(enum full_image_id id);
 void load_kid_sprite(void);
 void save_game(void);
 short load_game(void);
+bool write_save_file(void);
 void clear_screen_and_sounds(void);
 void parse_cmdline_sound(void);
 void free_optional_sounds(void);
@@ -634,6 +635,9 @@ void show_text_with_color(const rect_type* rect_ptr,int x_align,int y_align, con
 void do_simple_wait(int timer_index);
 void process_events(void);
 void idle(void);
+#ifdef __EMSCRIPTEN__
+void web_game_state(int level);
+#endif
 void init_copyprot_dialog(void);
 int showmessage(char *text,int arg_4,void *arg_0);
 dialog_type* make_dialog_info(dialog_settings_type* settings, rect_type* dialog_rect,

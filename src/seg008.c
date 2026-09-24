@@ -1805,13 +1805,13 @@ void show_time() {
 			if (rem_min == 1) {
 				rem_sec = (rem_tick + 1) / 12;
 				if (rem_sec == 1) {
-					strncpy(sprintf_temp, "1 SECOND LEFT", sizeof(sprintf_temp));
+					strncpy(sprintf_temp, "QUEDA 1 SEGUNDO", sizeof(sprintf_temp));
 					text_time_remaining = text_time_total = 12;
 				} else {
-					snprintf(sprintf_temp, sizeof(sprintf_temp), "%d SECONDS LEFT", rem_sec);
+					snprintf(sprintf_temp, sizeof(sprintf_temp), "QUEDAN %d SEGUNDOS", rem_sec);
 				}
 			} else {
-				snprintf(sprintf_temp, sizeof(sprintf_temp), "%d MINUTES LEFT", rem_min);
+				snprintf(sprintf_temp, sizeof(sprintf_temp), "QUEDAN %d MINUTOS", rem_min);
 			}
 			display_text_bottom(sprintf_temp);
 		} else {
@@ -1825,9 +1825,9 @@ void show_time() {
 					sprintf_temp[0] = '\0';
 				}
 				else if (~rem_min == 1) {
-					snprintf(sprintf_temp, sizeof(sprintf_temp), "1 MINUTE PASSED");
+					snprintf(sprintf_temp, sizeof(sprintf_temp), "1 MINUTO DE JUEGO");
 				} else {
-					snprintf(sprintf_temp, sizeof(sprintf_temp), "%d MINUTES PASSED", ~rem_min);
+					snprintf(sprintf_temp, sizeof(sprintf_temp), "%d MINUTOS DE JUEGO", ~rem_min);
 				}
 				display_text_bottom(sprintf_temp);
 			}
@@ -1835,7 +1835,7 @@ void show_time() {
 			else if (rem_min == 0) // may also be negative, don't report "expired" in that case!
 #endif
 
-			display_text_bottom("TIME HAS EXPIRED!");
+			display_text_bottom("FIN DEL TIEMPO!");
 		}
 		is_show_time = 0;
 	}
@@ -1853,7 +1853,7 @@ void show_level() {
 			disp_level = /*12*/ custom->level_13_level_number;
 		}
 		text_time_remaining = text_time_total = 24;
-		snprintf(sprintf_temp, sizeof(sprintf_temp), "LEVEL %d", disp_level);
+		snprintf(sprintf_temp, sizeof(sprintf_temp), "NIVEL %d", disp_level);
 		display_text_bottom(sprintf_temp);
 		is_show_time = 1;
 	}

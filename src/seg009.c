@@ -340,6 +340,10 @@ int round_xpos_to_byte(int xpos,int round_direction) {
 // seg009:0C7A
 void quit(int exit_code) {
 	restore_stuff();
+#ifdef __EMSCRIPTEN__
+	// In the browser there is nothing to go back to: start over instead of leaving a black page.
+	EM_ASM({ location.reload(); });
+#endif
 	exit(exit_code);
 }
 
@@ -3795,6 +3799,18 @@ void process_events() {
 		}
 	}
 }
+
+#ifdef __EMSCRIPTEN__
+// Tells the web page what is on screen: 0 = title and intro, otherwise the level being played.
+void web_game_state(int level) {
+	EM_ASM({ if (Module.onGameState) Module.onGameState($0); }, level);
+}
+
+// The web page's "Continue" button: like pressing Ctrl+L on the title screen.
+EMSCRIPTEN_KEEPALIVE void web_continue(void) {
+	last_key_scancode = SDL_SCANCODE_L | WITH_CTRL;
+}
+#endif
 
 void idle() {
 	process_events();
