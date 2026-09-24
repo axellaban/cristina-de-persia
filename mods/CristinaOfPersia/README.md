@@ -12,7 +12,7 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 | Los guardias (y el guardia gordo) | Granaderos: morrión con penacho, casaca azul con cuello de color y pantalón blanco |
 | Pociones chica / grande | Mate / termo |
 | Pinches | Palas, muchas palas, con un cartel del FMI |
-| Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban Arzubi" |
+| Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban & Jordan Mechner" |
 
 ## Jugar
 

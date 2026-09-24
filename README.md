@@ -1,7 +1,7 @@
 # Cristina of Persia
 
 Parodia argentina de *Prince of Persia*, hecha sobre [SDLPoP](https://github.com/NagyD/SDLPoP).
-A game by Axel Laban Arzubi.
+A game by Axel Laban & Jordan Mechner.
 
 ![Cristina of Persia](mods/CristinaOfPersia/promo.png)
 

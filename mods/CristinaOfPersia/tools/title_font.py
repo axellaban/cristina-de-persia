@@ -2,7 +2,7 @@
 "presents"): serif gruesa de 2 px, blanca con contorno negro.
 
 Las letras que aparecen en esas imágenes se copiaron tal cual; las que faltan
-(A, L, U, i, l, u, x, z) están dibujadas a mano con las mismas medidas.
+(A, L, U, i, l, u, x, z, &) están dibujadas a mano con las mismas medidas.
 Cada letra ocupa 12 filas: 0-2 ascendentes, 3-8 cuerpo, 9-11 descendentes.
 """
 from PIL import Image, ImageFilter
@@ -41,6 +41,8 @@ GLYPHS = {
     "u": ["", "", "", "###..###.", ".##...##.", ".##...##.", ".##...##.", ".##..###.", "..###.###"],
     "x": ["", "", "", "###..###", ".##..#..", "..###...", "..###...", ".#..##..", "###.####"],
     "z": ["", "", "", "######", "#...##", "...##.", "..##..", ".##..#", "######"],
+    "&": ["..###...", ".##.##..", ".##.##..", "..###...", ".###..##", "##.##.#.", "##..###.", "##...##.",
+          ".####.##"],
 }
 HEIGHT = 12
 SPACE = 3

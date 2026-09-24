@@ -3,7 +3,7 @@
 
 - TITLE/res54: logo "CRISTINA of PERSIA" (reemplaza "PRINCE of PERSIA")
 - TITLE/res52: "Una parodia argentina" (reemplaza "Broderbund Software presents")
-- TITLE/res53: "a game by Axel Laban Arzubi" (reemplaza "a game by Jordan Mechner")
+- TITLE/res53: "a game by Axel Laban & Jordan Mechner" (reemplaza "a game by Jordan Mechner")
   Estas dos usan la tipografía de los créditos originales (title_font.py).
 - TITLE/res42, 43, 44: textos de la historia, en castellano
 Los créditos del juego original (res45 y el copyright de Jordan Mechner, res55) no se tocan.
@@ -141,15 +141,23 @@ def presents():
     credit(52, (96, 106), 128, [("Una parodia", 10), ("argentina", 26)])
 
 
+AUTHORS = "Axel Laban & Jordan Mechner"
+
+
 def author():
     # más ancha que la original (122 px): el juego la centra en el mismo lugar
-    # (ver draw_full_image en src/seg000.c), así que empieza en 96 + (122 - 136) / 2
-    width = 136
-    credit(53, (96 + (122 - width) // 2, 122), width, [("a game by", 4), ("Axel Laban Arzubi", 18)])
+    # (ver draw_full_image en src/seg000.c, que hace xpos += (122 - ancho) / 2)
+    width = title_font.text_width(AUTHORS) + 6
+    x = 96 + int((122 - width) / 2)  # división de C: trunca hacia cero
+    credit(53, (x, 122), width, [("a game by", 4), (AUTHORS, 18)])
 
 
 def main():
     os.makedirs(DST, exist_ok=True)
+    author()  # no necesita fuentes del sistema
+    if not os.path.isdir(FONTS):
+        print(f"(sin {FONTS}: sólo se regeneró el crédito del autor)")
+        return
     # el mismo tamaño de letra en las tres pantallas: el mayor que entre en todas
     size = next(sz for sz in range(15, 9, -1)
                 if all(layout(r, c, t, sz)[-1] for r, (c, t) in STORIES.items()))
@@ -157,7 +165,6 @@ def main():
         story(res, cap, text, size)
     logo()
     presents()
-    author()
 
 
 if __name__ == "__main__":

@@ -234,7 +234,7 @@
 <div id="loading">
   <div class="box">
     <h1>Cristina of Persia</h1>
-    <p>Una parodia argentina · a game by Axel Laban Arzubi</p>
+    <p>Una parodia argentina · a game by Axel Laban &amp; Jordan Mechner</p>
     <div id="bar"><div></div></div>
     <p id="status">Cargando...</p>
   </div>
@@ -511,7 +511,7 @@
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
-    locateFile: (path) => path + "?v=1253298184",
+    locateFile: (path) => path + "?v=253378935",
     preRun: [() => {
       const FS = Module.FS;
       try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
@@ -553,7 +553,7 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js?v=1253298184"></script>
+<script async src="prince.js?v=253378935"></script>
 <script>
   // sin conexión y carga instantánea (sobre todo instalado como app)
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
