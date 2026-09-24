@@ -1,6 +1,6 @@
 // Guarda el juego en el celular: abre al instante y funciona sin conexión.
-// build.sh reemplaza 148422011; cada versión nueva usa su propia caché y borra las viejas.
-const VERSION = "148422011";
+// build.sh reemplaza 1253298184; cada versión nueva usa su propia caché y borra las viejas.
+const VERSION = "1253298184";
 const CACHE = "cristina-" + VERSION;
 const FILES = [
   "./",
@@ -8,7 +8,8 @@ const FILES = [
   "prince.wasm?v=" + VERSION,
   "prince.data?v=" + VERSION,
   "manifest.json",
-  "icon.png",
+  "favicon.ico",
+  "favicon-32.png",
   "icon-192.png",
   "icon-512.png",
   "apple-touch-icon.png",

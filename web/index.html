@@ -26,7 +26,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cristina">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root {
@@ -510,7 +511,7 @@
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
-    locateFile: (path) => path + "?v=148422011",
+    locateFile: (path) => path + "?v=1253298184",
     preRun: [() => {
       const FS = Module.FS;
       try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
@@ -552,7 +553,7 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js?v=148422011"></script>
+<script async src="prince.js?v=1253298184"></script>
 <script>
   // sin conexión y carga instantánea (sobre todo instalado como app)
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {

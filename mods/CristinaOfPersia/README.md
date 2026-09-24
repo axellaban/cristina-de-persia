@@ -58,6 +58,7 @@ python3 tools/make_all.py
 | `make_guards.py` | Granaderos: paletas (`PRINCE/res10.bin`) y morrión (`GUARD/res751-784`, `FAT/res751-784`) |
 | `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`; usa fuentes de macOS) |
 | `make_promo.py` | La imagen promocional (`promo.png`), con los sprites del juego |
+| `make_icon.py` | Favicon e íconos de la app web (`webbuild/favicon*`, `icon-*.png`, `apple-touch-icon.png`) |
 | `make_jingle.py` | Marcha de la entrada de Macri (`music/story_3_Jaffar_enters.ogg`; necesita `numpy` y `soundfile`) |
 | `make_shovels.py` | Palas en lugar de pinches (`VDUNGEON` y `VPALACE/res328-343`) |
 

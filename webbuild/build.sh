@@ -34,12 +34,12 @@ emcc "${OPT:--Oz}" \
 	-o web/prince.js
 
 # versión: cambia si cambia el juego o la página, así el navegador nunca mezcla archivos viejos y nuevos
-VERSION=$(cat web/prince.js web/prince.wasm web/prince.data webbuild/index.html webbuild/sw.js webbuild/manifest.json webbuild/*.png | cksum | cut -d' ' -f1)
+VERSION=$(cat web/prince.js web/prince.wasm web/prince.data webbuild/index.html webbuild/sw.js webbuild/manifest.json webbuild/*.png webbuild/favicon.ico | cksum | cut -d' ' -f1)
 sed "s/__VERSION__/$VERSION/g" webbuild/index.html > web/index.html
 sed "s/__VERSION__/$VERSION/g" webbuild/sw.js > web/sw.js
 cp webbuild/manifest.json web/manifest.json
 cp mods/CristinaOfPersia/promo.png web/promo.png
-cp data/icon.png web/icon.png
-cp webbuild/icon-192.png webbuild/icon-512.png webbuild/apple-touch-icon.png web/
+cp webbuild/favicon.ico webbuild/favicon-32.png webbuild/icon-192.png webbuild/icon-512.png \
+	webbuild/icon-maskable-512.png webbuild/apple-touch-icon.png web/
 rm -rf "$STAGE"
 ls -la web
