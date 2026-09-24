@@ -166,8 +166,20 @@ enum chtabs {
 	id_chtab_6_environment = 6,
 	id_chtab_7_environmentwall = 7,
 	id_chtab_8_princessroom = 8,
-	id_chtab_9_princessbed = 9
+	id_chtab_9_princessbed = 9,
+	// Mods: alternative kid sprites (KID res1401..), shown for a while after drinking a potion.
+	// Not freed with the other chtabs.
+	id_chtab_10_kid_alt = 10
 };
+
+// How long (in frames) the kid keeps the alternative sprites after drinking a potion.
+#define KID_ALT_TIME 180
+
+// Mods: sign next to the spikes (PRINCE res174, after the potion images).
+#define SPIKE_SIGN_IMAGE 24
+
+// Number of sword images in PRINCE.DAT (res701..734).
+#define N_SWORD_IMAGES 34
 
 enum blitters {
 	blitters_0_no_transp = 0,

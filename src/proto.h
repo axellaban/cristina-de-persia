@@ -114,6 +114,7 @@ void set_hourglass_state(int state);
 int hourglass_frame(void);
 void princess_room_torch(void);
 void draw_hourglass(void);
+void draw_balloons(void);
 void reset_cutscene(void);
 void do_flash(short color);
 void delay_ticks(Uint32 ticks);

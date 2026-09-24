@@ -21,6 +21,9 @@ The authors of this program may be contacted at https://forum.princed.org
 #include "common.h"
 #include <time.h>
 #include <errno.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -3794,6 +3797,10 @@ void process_events() {
 void idle() {
 	process_events();
 	update_screen();
+#ifdef __EMSCRIPTEN__
+	// In the browser, give control back to the page so it can draw and handle input.
+	emscripten_sleep(0);
+#endif
 }
 
 void do_simple_wait(int timer_index) {

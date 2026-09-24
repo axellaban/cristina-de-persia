@@ -647,6 +647,12 @@ void draw_tile_anim() {
 	word color = 12; // red
 	switch (curr_tile) {
 		case tiles_2_spike:
+			// Mods can add a sign image after the potion images; it stands behind the spikes.
+			if (chtab_addrs[id_chtab_1_flameswordpotion] != NULL &&
+				chtab_addrs[id_chtab_1_flameswordpotion]->n_images >= SPIKE_SIGN_IMAGE
+			) {
+				ptr_add_table(id_chtab_1_flameswordpotion, SPIKE_SIGN_IMAGE, draw_xh + 1, 2, draw_main_y - 6, blitters_10h_transp, 0);
+			}
 			ptr_add_table(id_chtab_6_environment, spikes_fram_left[get_spike_frame(curr_modifier)], draw_xh, 0, draw_main_y - 2, blitters_10h_transp, 0);
 			break;
 		case tiles_10_potion:
@@ -1658,6 +1664,14 @@ void add_kid_to_objtable() {
 	loadkid();
 	load_fram_det_col();
 	load_frame_to_obj();
+	if (kid_alt_time > 0 && obj_chtab == id_chtab_2_kid && chtab_addrs[id_chtab_10_kid_alt] != NULL &&
+		obj_id < chtab_addrs[id_chtab_10_kid_alt]->n_images
+	) {
+		// Alternative sprites, swaying from side to side.
+		static const sbyte sway[8] = {0, 2, 4, 2, 0, -2, -4, -2};
+		obj_chtab = id_chtab_10_kid_alt;
+		obj_x += sway[(kid_alt_time >> 1) & 7];
+	}
 	stuck_lower();
 	set_char_collision();
 	set_objtile_at_char();

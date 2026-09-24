@@ -2106,6 +2106,11 @@ void draw_full_image(enum full_image_id id) {
 	int blit = full_image[id].blitter;
 	int xpos = full_image[id].xpos;
 	int ypos = full_image[id].ypos;
+	if (id == TITLE_GAME && decoded_image != NULL) {
+		// Keep the credit centered where the original one (122 pixels wide) was,
+		// so mods can use a wider image.
+		xpos += (122 - decoded_image->w) / 2;
+	}
 
 	switch (blit) {
 	case blitters_white:
@@ -2134,6 +2139,12 @@ void draw_full_image(enum full_image_id id) {
 // seg000:1D2C
 void load_kid_sprite() {
 	load_chtab_from_file(id_chtab_2_kid, 400, "KID.DAT", 1<<7);
+	// Mods can provide alternative kid sprites (res1400.pal + res1401..) in KID.
+	if (chtab_addrs[id_chtab_10_kid_alt] == NULL) {
+		dat_type* dathandle = open_dat("KID.DAT", 'G');
+		chtab_addrs[id_chtab_10_kid_alt] = load_sprites_from_file(1400, 1<<7, 0);
+		close_dat(dathandle);
+	}
 }
 
 const char* save_file = "PRINCE.SAV";

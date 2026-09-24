@@ -67,7 +67,7 @@ extern short start_level INIT(= -1);
 // data:4CE6
 extern byte * guard_palettes;
 // data:4338
-extern chtab_type *chtab_addrs[10];
+extern chtab_type *chtab_addrs[11];
 
 
 #ifdef USE_COPYPROT
@@ -193,7 +193,7 @@ extern rect_type drects[30];
 // data:4CB8
 extern sbyte obj_direction;
 // data:2588
-extern const byte chtab_flip_clip[10] INIT(= {1,0,1,1,1,1,0,0,0,0});
+extern const byte chtab_flip_clip[11] INIT(= {1,0,1,1,1,1,0,0,0,0,1});
 // data:42A6
 extern short obj_clip_left;
 // data:42C6
@@ -205,7 +205,7 @@ extern short obj_clip_bottom;
 // data:34D2
 extern wipetable_type wipetable[300];
 // data:2592
-extern const byte chtab_shift[10] INIT(= {0,1,0,0,0,0,1,1,1,0});
+extern const byte chtab_shift[11] INIT(= {0,1,0,0,0,0,1,1,1,0,0});
 // data:4354
 extern word need_drects;
 // data:4CC2
@@ -301,6 +301,8 @@ extern sound_buffer_type* sound_pointers[58];
 extern word guardhp_max;
 // data:405C
 extern word is_feather_fall;
+// Frames left with the alternative kid sprites (mods).
+extern word kid_alt_time;
 // data:4CBA
 extern chtab_type* chtab_title40;
 // data:4CD0

@@ -187,6 +187,7 @@ void set_start_pos() {
 	knock = 0;
 	upside_down = custom->start_upside_down; // 0
 	is_feather_fall = 0;
+	kid_alt_time = 0;
 	Char.fall_y = 0;
 	Char.fall_x = 0;
 	offguard = 0;
@@ -495,6 +496,9 @@ void timers() {
 	}
 	if (resurrect_time > 0) {
 		--resurrect_time;
+	}
+	if (kid_alt_time > 0) {
+		--kid_alt_time;
 	}
 
 	if (fixes->fix_quicksave_during_feather) {

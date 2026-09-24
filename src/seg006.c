@@ -1862,6 +1862,9 @@ void proc_get_object() {
 		flash_color = color_14_brightyellow;
 		flash_time = 8;
 	} else {
+		if (chtab_addrs[id_chtab_10_kid_alt] != NULL) {
+			kid_alt_time = KID_ALT_TIME; // mods: the potion transforms the kid for a while
+		}
 		switch (pickup_obj_type) {
 			case 1: // health
 				if (hitp_curr != hitp_max) {
@@ -2109,6 +2112,14 @@ void add_sword_to_objtable() {
 		if (sword_frame) {
 			obj_id = sword_tbl[sword_frame].id;
 			if (obj_id != 0xFF) {
+				// Mods can give the kid (and the shadow) a weapon of their own:
+				// if the sword chtab has twice the images, the second half is theirs.
+				chtab_type* sword_chtab = chtab_addrs[id_chtab_0_sword];
+				if ((Char.charid == charid_0_kid || Char.charid == charid_1_shadow) &&
+					sword_chtab != NULL && sword_chtab->n_images >= 2 * N_SWORD_IMAGES
+				) {
+					obj_id += N_SWORD_IMAGES;
+				}
 				obj_x = calc_screen_x_coord(obj_x);
 				obj_dx_forward(sword_tbl[sword_frame].x);
 				obj_y += sword_tbl[sword_frame].y;

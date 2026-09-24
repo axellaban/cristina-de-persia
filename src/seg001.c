@@ -20,6 +20,9 @@ The authors of this program may be contacted at https://forum.princed.org
 
 #include "common.h"
 
+// Frame counter of the balloons in the princess room (-1: no balloons).
+static int balloons_frame = -1;
+
 #ifndef _MSC_VER // unistd.h does not exist in the Windows SDK.
 #include <unistd.h>
 #endif
@@ -173,6 +176,7 @@ void draw_princess_room_bg() {
 	add_foretable(id_chtab_8_princessroom, 2 /*pillar piece*/, 30, 0, 167, blitters_10h_transp, 0);
 	princess_room_torch();
 	draw_hourglass();
+	draw_balloons();
 	draw_tables();
 }
 
@@ -444,6 +448,7 @@ void pv_scene() {
 	seqtbl_offset_kid_char(96); // Jaffar walk [PV1]
 	if (proc_cutscene_frame(6)) return;
 	play_sound(sound_53_story_3_Jaffar_comes); // story 3: Jaffar comes
+	balloons_frame = 0; // mods: balloons rise while the vizier is in the room
 	seqtbl_offset_kid_char(97); // Jaffar stop [PV1]
 	if (proc_cutscene_frame(4)) return;
 	if (proc_cutscene_frame(18)) return;
@@ -509,6 +514,29 @@ void princess_room_torch() {
 		princess_torch_frame[which_torch] = get_torch_frame(princess_torch_frame[which_torch]);
 		add_backtable(id_chtab_1_flameswordpotion, princess_torch_frame[which_torch] + 1, princess_torch_pos_xh[which_torch], princess_torch_pos_xl[which_torch], 116, 0, 0);
 	}
+}
+
+// Mods can add a balloon image to the princess room images (right after the
+// hourglass images). When it is there, balloons rise while the vizier is in the room.
+#define BALLOON_IMAGE 13
+#define N_BALLOONS 12
+static const short balloon_x[N_BALLOONS] = {18, 262, 58, 222, 104, 290, 150, 36, 196, 240, 80, 176};
+static const short balloon_speed[N_BALLOONS] = {3, 2, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3};
+void draw_balloons() {
+	if (balloons_frame < 0) return;
+	chtab_type* chtab = chtab_addrs[id_chtab_8_princessroom];
+	if (chtab == NULL || chtab->n_images < BALLOON_IMAGE) return;
+	reset_obj_clip();
+	for (short i = 0; i < N_BALLOONS; ++i) {
+		// each balloon starts below the screen at a different depth and loops upwards
+		int y = 230 + i * 22 - balloons_frame * balloon_speed[i];
+		while (y < 0) y += 260;
+		int x = balloon_x[i] + (((balloons_frame + i * 3) / 4) % 2); // sway
+		if (y > 200 + 30) continue;
+		// in the middle table, like the characters: what they cover is restored next frame
+		add_midtable(id_chtab_8_princessroom, BALLOON_IMAGE, x >> 3, x & 7, y, blitters_10h_transp, 1);
+	}
+	++balloons_frame;
 }
 
 // seg001:0863
@@ -686,7 +714,9 @@ void load_intro(int which_imgs,cutscene_ptr_type func,int free_sounds) {
 	need_drects = 1;
 	reset_cutscene();
 	is_cutscene = 1;
+	balloons_frame = -1;
 	func();
+	balloons_frame = -1;
 	is_cutscene = 0;
 	free_all_chtabs_from(3);
 	draw_rect(&screen_rect, color_0_black);
