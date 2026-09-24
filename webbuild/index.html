@@ -117,15 +117,13 @@
   body.is-full #btn-full { display: none; }
 
   /* inicio: igual que la pantalla de inicio de SDLPoP (negra, con la letra del juego),
-     con nuestro texto; se dibuja en un canvas de 320x200 escalado como el del juego */
+     con nuestro texto; se dibuja en un canvas de 320x200 escalado como el del juego
+     (con el celular parado, más angosto: así la letra se ve más grande) */
   #loading {
     position: fixed; inset: 0; background: #000;
     display: flex; align-items: center; justify-content: center;
   }
-  #splash {
-    display: block; image-rendering: pixelated; image-rendering: crisp-edges;
-    width: min(var(--w), var(--h) * 1.6); height: min(var(--w) * 0.625, var(--h));
-  }
+  #splash { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* listo para jugar: toda la pantalla es el botón (el sonido sólo arranca con un toque) */
   #loading.ready { cursor: pointer; }
@@ -233,7 +231,7 @@
 
 <div id="loading">
   <h1 class="sr-only">Cristina of Persia</h1>
-  <canvas id="splash" width="320" height="200" role="img" aria-label="Una parodia argentina. A game by Axel Laban &amp; Jordan Mechner"></canvas>
+  <canvas id="splash" width="320" height="200" role="img" aria-label="El código original de Prince of Persia (1989) estuvo perdido durante 22 años. Su creador, Jordan Mechner, lo daba por desaparecido hasta que, en 2012, su padre limpiando un armario encontró una caja con tres viejos disquetes de Apple II. Para no destruir los frágiles discos, archivistas expertos tuvieron que usar hardware especializado para extraer los datos magnéticos. Tras este exitoso rescate, Mechner subió inmediatamente el código a GitHub para que jamás volviera a perderse. En 2026 un Argentino agarró el código, el resto es historia."></canvas>
   <p id="status" class="sr-only" aria-live="polite">Cargando...</p>
 </div>
 
@@ -515,17 +513,51 @@
     for (const ch of line) { const g = glyphOf(ch); if (g) w += g.w + FONT.gap; }
     return w;
   }
-  // como draw_text en src/seg009.c: rect = [arriba, izquierda, abajo, derecha]; centrado
-  // horizontal; vertical al medio (middle) o arriba
-  function drawText(rect, middle, text, color) {
-    const lines = text.split("\n");
+  const STORY =
+    "El código original de Prince of Persia (1989) estuvo perdido durante 22 años. Su creador, " +
+    "Jordan Mechner, lo daba por desaparecido hasta que, en 2012, su padre limpiando un armario " +
+    "encontró una caja con tres viejos disquetes de Apple II.\n\n" +
+    "Para no destruir los frágiles discos, archivistas expertos tuvieron que usar hardware " +
+    "especializado para extraer los datos magnéticos. Tras este exitoso rescate, Mechner subió " +
+    "inmediatamente el código a GitHub para que jamás volviera a perderse.\n\n" +
+    "En 2026 un Argentino agarró el código, el resto es historia.";
+  // corta en palabras para que cada renglón entre en el ancho (como find_linebreak)
+  function wrap(text, width) {
+    const out = [];
+    for (const para of text.split("\n")) {
+      let line = "";
+      for (const word of para.split(" ")) {
+        const test = line ? line + " " + word : word;
+        if (line && lineWidth(test) > width) { out.push(line); line = word; }
+        else line = test;
+      }
+      out.push(line);
+    }
+    return out;
+  }
+  // como draw_text en src/seg009.c: renglones centrados, y el bloque al medio de la pantalla.
+  // Acostado es la pantalla del juego (320x200); parado, una más angosta y alta para que la
+  // letra se vea grande.
+  let splashLine = "";
+  function setSplash(line) {
+    splashLine = line;
+    status.textContent = line;
+    const portrait = innerHeight > innerWidth;
+    const W = portrait ? 184 : 320;
+    const lines = wrap(STORY, W - 8).map((t) => [t, GRAY]).concat([["", GRAY], [line, WHITE]]);
     const height = FONT.line * lines.length - 1;
-    let y = rect[0];
-    if (middle) y += Math.floor((rect[2] - rect[0] + 1) / 2) - Math.floor((height + 1) / 2);
-    sctx.fillStyle = color;
-    for (const line of lines) {
-      let x = rect[1] + Math.floor((rect[3] - rect[1]) / 2) - Math.floor(lineWidth(line) / 2);
-      for (const ch of line) {
+    const H = portrait ? Math.max(200, height + 24) : 200;
+    if (splash.width !== W || splash.height !== H) { splash.width = W; splash.height = H; }
+    const scale = Math.min(innerWidth / W, innerHeight / H);
+    splash.style.width = Math.floor(W * scale) + "px";
+    splash.style.height = Math.floor(H * scale) + "px";
+    sctx.fillStyle = "#000";
+    sctx.fillRect(0, 0, W, H);
+    let y = Math.floor((H + 1) / 2) - Math.floor((height + 1) / 2);
+    for (const [text, color] of lines) {
+      sctx.fillStyle = color;
+      let x = Math.floor(W / 2) - Math.floor(lineWidth(text) / 2);
+      for (const ch of text) {
         const g = glyphOf(ch);
         if (!g) continue;
         g.rows.forEach((bits, r) => {
@@ -536,13 +568,7 @@
       y += FONT.line;
     }
   }
-  function setSplash(line) {
-    status.textContent = line;
-    sctx.fillStyle = "#000";
-    sctx.fillRect(0, 0, 320, 200);
-    drawText([0, 0, 50, 320], true, "Una parodia argentina", WHITE);
-    drawText([50, 0, 200, 320], false, "a game by Axel Laban & Jordan Mechner\n\n" + line, GRAY);
-  }
+  addEventListener("resize", () => { if (splashLine) setSplash(splashLine); });
   setSplash("Cargando...");
   // Los guardados (partidas, mejores marcas, opciones) viven en $HOME/.SDLPoP: se guardan en el
   // navegador (IndexedDB) para que no se pierdan al cerrar la página.
