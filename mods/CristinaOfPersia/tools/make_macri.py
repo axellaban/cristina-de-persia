@@ -5,8 +5,8 @@ Aplica a las escenas (data/PV/res851-888) y a la pelea final del nivel 13
 (data/VIZIER/res751-784).
 
 - Turbante -> pelo corto canoso con entradas (el resto del turbante se borra)
-- Cara: piel clara, ojo celeste, bigote
-- Barba blanca -> cuello de camisa blanca
+- Cara: piel clara, ojo celeste, afeitado y con la sonrisa de campaña
+- Barba blanca -> cuello de camisa blanca y camisa celeste
 - Túnica blanca -> saco azul marino largo
 - Pantalón rosa -> pantalón gris oscuro
 - Zapatos dorados -> zapatos negros
@@ -25,7 +25,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 T = 0
 PANTS, PANTS_D, WHITE, EYE, SKIN_D, SKIN, BEARD, ROBE_D, ROBE = 1, 2, 3, 4, 5, 6, 7, 8, 9
 SHOE_D, SHOE, TURBAN, TURBAN2, TIE, TURBAN_O = 10, 11, 12, 13, 14, 15
-HAIR, HAIR_D, MUSTACHE = TURBAN, TURBAN_O, TURBAN2
+HAIR, HAIR_D, SHIRT = TURBAN, TURBAN_O, TURBAN2
 
 NEW_COLORS = {
     PANTS: (52, 54, 72),
@@ -39,9 +39,9 @@ NEW_COLORS = {
     ROBE: (30, 38, 92),
     SHOE_D: (58, 50, 50),
     SHOE: (26, 22, 22),
-    HAIR: (178, 170, 160),
-    HAIR_D: (122, 114, 106),
-    MUSTACHE: (96, 80, 68),
+    HAIR: (206, 204, 200),     # canoso
+    HAIR_D: (140, 138, 136),
+    SHIRT: (178, 214, 246),    # camisa celeste
     TIE: (250, 212, 0),       # amarillo PRO
 }
 TIE_LEN = 13
@@ -68,7 +68,8 @@ def haircut(px, w, h, turban, eye, back):
                 px[x, y] = SKIN
 
 
-def mustache(px, w, h, eye, back):
+def smile(px, w, h, eye, back):
+    """La sonrisa: un píxel de dientes en la boca, lo más adelante de la cara."""
     ex, ey = eye
     y = ey + 2
     if y >= h:
@@ -76,10 +77,7 @@ def mustache(px, w, h, eye, back):
     row = [x for x in range(w) if px[x, y] in (SKIN, SKIN_D) and abs(x - ex) <= 3]
     if row:
         x0 = min(row) if back > 0 else max(row)  # lo más adelantado
-        for k in range(2):
-            x = x0 + k * back
-            if 0 <= x < w and px[x, y] in (SKIN, SKIN_D):
-                px[x, y] = MUSTACHE
+        px[x0 + back, y] = WHITE if 0 <= x0 + back < w and px[x0 + back, y] in (SKIN, SKIN_D) else px[x0 + back, y]
 
 
 def transform(im):
@@ -116,36 +114,55 @@ def transform(im):
             eye = None
         if eye:
             haircut(px, w, h, turban, eye, back)
-            mustache(px, w, h, eye, back)
+            smile(px, w, h, eye, back)
         front = -back
         fbottom = max(p[1] for p in head_face) if head_face else top + 7
         ffront = (max if front > 0 else min)(p[0] for p in head_face) if head_face else round(fx)
-        # la barba que toca la cara es mentón; justo debajo, cuello de camisa;
-        # más abajo el gris claro era el forro de la túnica -> forro oscuro
+        # La barba blanca: lo que toca la cara es mentón (piel); lo que colgaba por
+        # delante del pecho desaparece; debajo del mentón, cuello blanco y camisa
+        # celeste; más abajo, el gris claro era el forro de la túnica -> forro oscuro.
         for y in range(h):
             for x in range(w):
-                if px[x, y] == BEARD:
-                    if y <= fbottom:
-                        px[x, y] = SKIN
-                    elif y > fbottom + 3:
-                        px[x, y] = ROBE_D
-        # corbata recta, colgando del cuello
-        collar = [(x, y) for y in range(h) for x in range(w) if px[x, y] == BEARD]
-        start = (max(p[1] for p in collar) + 1) if collar else fbottom + 2
-        tx = ffront - front * 2
+                if px[x, y] != BEARD:
+                    continue
+                ahead = (x - ffront) * front  # > 0: por delante de la cara
+                if y <= fbottom:
+                    px[x, y] = SKIN if ahead <= 0 else T
+                elif y == fbottom + 1:
+                    px[x, y] = WHITE if ahead <= -2 else T  # la punta de la barba se va
+                elif y <= fbottom + 4:
+                    px[x, y] = SHIRT
+                elif y <= fbottom + 8:
+                    px[x, y] = ROBE   # la pechera: el frente del saco
+                else:
+                    px[x, y] = ROBE_D
+        # corbata: sigue el frente del pecho, un píxel adentro; al lado asoma la camisa
+        def chest_front(y):
+            xs = [x for x in range(w) if px[x, y] in (ROBE, ROBE_D, SHIRT, WHITE)]  # sin las mangas
+            return ((min(xs) if front < 0 else max(xs)) if xs else None)
+        tx = None
         painted = 0
-        for k in range(TIE_LEN + 4):
-            y = start + k
-            if y >= h or painted >= TIE_LEN:
-                break
-            if 0 <= tx < w and px[tx, y] in SUIT:
-                px[tx, y] = TIE
-                painted += 1
-                if painted == 1:  # nudo
-                    x2 = tx - front
-                    if 0 <= x2 < w and px[x2, y] in SUIT:
-                        px[x2, y] = TIE
-            elif painted:
+        for y in range(fbottom + 1, min(h, fbottom + 1 + TIE_LEN + 4)):
+            edge = chest_front(y)
+            if edge is None:
+                if painted:
+                    break
+                continue
+            x = edge - front
+            if tx is not None:
+                x = max(tx - 1, min(tx + 1, x))  # que no zigzaguee
+            if not (0 <= x < w) or px[x, y] not in (ROBE, ROBE_D, SHIRT, WHITE):
+                if painted:
+                    break
+                continue
+            px[x, y] = TIE
+            tx = x
+            painted += 1
+            if painted <= 2 and 0 <= x - front < w and px[x - front, y] in SUIT + (SHIRT,):
+                px[x - front, y] = TIE  # nudo
+            if painted <= 4 and px[edge, y] in SUIT:
+                px[edge, y] = SHIRT     # camisa celeste en el escote del saco
+            if painted >= TIE_LEN:
                 break
     elif turban:
         # de espaldas: sólo la coronilla

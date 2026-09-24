@@ -30,24 +30,25 @@ EYE = 12     # en el abrazo, la sombra del traje del príncipe (12) se funde con
 BEARD = 13   # marrón muy oscuro, igual que los zapatos de Cristina en el abrazo
 
 NEW_COLORS = {
-    HAIR: (48, 34, 26),
-    HAIR_D: (28, 20, 16),
+    HAIR: (46, 34, 28),
+    HAIR_D: (24, 18, 14),
     BODICE: (112, 178, 232),   # celeste Racing
     STRIPE: (246, 246, 246),
     SKIRT: (58, 84, 142),      # jean
     SKIRT_EDGE: (40, 58, 104),
     EYE: (34, 22, 18),
-    BEARD: (52, 36, 28),
+    BEARD: (74, 52, 38),
 }
-HUG_COLORS = {
-    KID_HAIR: (74, 42, 26),
-    KID_CLOTH: (34, 42, 118),
+HUG_COLORS = {  # los mismos que Cristina en make_kid.py
+    KID_HAIR: (108, 60, 36),
+    KID_CLOTH: (44, 56, 142),
 }
 HUG = range(911, 917)
 HEAD_ROWS = 7
 HAIR_ROWS = 4
 BACK_HAIR = 3
 HIP_ROWS = 4   # filas del jean que quedan enteras (la cadera)
+FOREARM = 3    # lo que queda de brazo sin manga
 LEG_W = 3      # ancho de cada pierna
 
 
@@ -71,7 +72,8 @@ def cristina_hair(px, w, h):
 
 
 def beard(px, w, h, eye, front):
-    """Barba: todo lo que está debajo del ojo, menos la punta de la nariz."""
+    """Barba tupida desde debajo de la nariz (con bigote); a la altura de la nariz
+    sólo la patilla, así las mejillas y la nariz quedan a la vista."""
     ex, ey = eye
     for y in (ey + 1, ey + 2, ey + 3):
         if y >= h:
@@ -79,11 +81,32 @@ def beard(px, w, h, eye, front):
         row = [x for x in range(w) if px[x, y] in SKIN_ALL and abs(x - ex) <= 3]
         if not row:
             continue
-        nose = max(row) if front > 0 else min(row)
         for x in row:
-            if y == ey + 1 and x == nose:
-                continue
+            if y == ey + 1 and (x - ex) * front >= -1:
+                continue  # mejilla y nariz
             px[x, y] = BEARD
+
+
+def jersey(px, w, h, head_bottom, waist, hx, keep_x=None):
+    """El vestido no tenía breteles: hombros, pecho y espalda pasan a ser camiseta,
+    con manga corta (el antebrazo y la mano quedan en piel)."""
+    neck = (hx, head_bottom)
+    for c in components(px, w, h, SKIN_ALL):
+        body = [p for p in c if head_bottom < p[1] < waist and (keep_x is None or keep_x(p[0]))]
+        if len(body) <= 2:
+            continue
+        hand = max(body, key=lambda p: (p[0] - neck[0]) ** 2 + (p[1] - neck[1]) ** 2)
+        for x, y in body:
+            if max(abs(x - hand[0]), abs(y - hand[1])) <= FOREARM:
+                continue
+            px[x, y] = BODICE
+
+
+def curls(px, hair):
+    """Pelo enrulado: puntitos más oscuros."""
+    for x, y in hair:
+        if px[x, y] == HAIR and (x + 2 * y) % 4 == 0:
+            px[x, y] = HAIR_D
 
 
 def transform(im, hug):
@@ -137,9 +160,10 @@ def transform(im, hug):
                 if p[1] > head_bottom:
                     px[p] = BODICE
 
-    # 2) barba
+    # 2) barba y rulos
     if has_eye:
         beard(px, w, h, eye, -back)
+    curls(px, [p for p in hair if px[p] in (HAIR, HAIR_D)])
 
     # 3) de pollera a pantalón: dos piernas desde la cadera hasta cada pie;
     #    el resto de la pollera se borra. Los pies pasan a ser zapatillas blancas
@@ -181,7 +205,15 @@ def transform(im, hug):
                 for p in c:
                     px[p] = STRIPE
 
-    # 4) camiseta de Racing: rayas verticales
+    # 4) camiseta con mangas cortas (en el abrazo, sólo del lado de Máximo)
+    skirt_now = [y for y in range(h) for x in range(w) if px[x, y] in (SKIRT, SKIRT_EDGE)]
+    waist = (min(skirt_now) + 2) if skirt_now else head_bottom + 12
+    keep_x = None
+    if hug:
+        keep_x = (lambda x: (x - hx) * back >= -2)  # Cristina queda del otro lado
+    jersey(px, w, h, head_bottom, waist, hx, keep_x)
+
+    # 5) camiseta de Racing: rayas verticales
     for y in range(h):
         for x in range(w):
             if px[x, y] == BODICE and x % 2:

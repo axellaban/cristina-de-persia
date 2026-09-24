@@ -4,12 +4,12 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 
 | Original | En el mod |
 |---|---|
-| El príncipe | Cristina: traje azul, pelo largo, banda presidencial |
+| El príncipe | Cristina: melena castaña con flequillo, labios rojos, traje azul y la banda presidencial celeste y blanca con el sol de mayo |
 | Tomar una poción | Cristina se convierte un rato en Bullrich borracha (y se tambalea) |
 | La espada (en la mano y en el piso) | El bastón presidencial (puño dorado, borla, contera) |
-| La princesa | Máximo: barba, camiseta de Racing, jean y zapatillas |
-| Jafar, el visir | Macri: canoso, bigote, traje azul, corbata amarilla; al entrar en escena suben globos amarillos |
-| Los guardias | Granaderos |
+| La princesa | Máximo: pelo enrulado, barba, camiseta de Racing de manga corta, jean y zapatillas |
+| Jafar, el visir | Macri: canoso, afeitado y sonriente, traje azul, camisa celeste y corbata amarilla; al entrar en escena suben globos amarillos |
+| Los guardias (y el guardia gordo) | Granaderos: morrión con penacho, casaca azul con cuello de color y pantalón blanco |
 | Pociones chica / grande | Mate / termo |
 | Pinches | Palas, muchas palas, con un cartel del FMI |
 | Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban Arzubi" |
@@ -55,8 +55,9 @@ python3 tools/make_all.py
 | `make_items.py` | Bastón en el piso, mate, termo y cartel del FMI (`PRINCE/res160-165,174` + `res150.pal`) |
 | `make_maximo.py` | Máximo y el abrazo final (`PV/res801-817`, `res901-930`) |
 | `make_macri.py` | Macri villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
-| `make_guards.py` | Paletas de los Granaderos (`PRINCE/res10.bin`) |
-| `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`) |
+| `make_guards.py` | Granaderos: paletas (`PRINCE/res10.bin`) y morrión (`GUARD/res751-784`, `FAT/res751-784`) |
+| `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`; usa fuentes de macOS) |
+| `make_promo.py` | La imagen promocional (`promo.png`), con los sprites del juego |
 | `make_jingle.py` | Marcha de la entrada de Macri (`music/story_3_Jaffar_enters.ogg`; necesita `numpy` y `soundfile`) |
 | `make_shovels.py` | Palas en lugar de pinches (`VDUNGEON` y `VPALACE/res328-343`) |
 
