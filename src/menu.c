@@ -1174,6 +1174,13 @@ void read_mouse_state(void) {
 	int last_mouse_x = mouse_x;
 	int last_mouse_y = mouse_y;
 	SDL_GetMouseState(&mouse_x, &mouse_y);
+	// On high-DPI screens (e.g. phones) the mouse position is in window units, but the render scale is in pixels.
+	int window_width, window_height, output_width, output_height;
+	SDL_GetWindowSize(window_, &window_width, &window_height);
+	if (window_width > 0 && window_height > 0 && SDL_GetRendererOutputSize(renderer_, &output_width, &output_height) == 0) {
+		mouse_x = mouse_x * output_width / window_width;
+		mouse_y = mouse_y * output_height / window_height;
+	}
 	mouse_x = (int) ((float)mouse_x/scale_x - viewport.x + 0.5f);
 	mouse_y = (int) ((float)mouse_y/scale_y - viewport.y + 0.5f);
 	mouse_moved = (last_mouse_x != mouse_x || last_mouse_y != mouse_y);

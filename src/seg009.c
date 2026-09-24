@@ -3763,7 +3763,9 @@ void process_events() {
 				switch(event.button.button) {
 					case SDL_BUTTON_LEFT:
 						if (!is_menu_shown) {
-							last_key_scancode = SDL_SCANCODE_BACKSPACE;
+							// A tap on a touch screen is too easy to do by accident to open the menu:
+							// treat it like Enter instead (skip texts, restart after dying).
+							last_key_scancode = (event.button.which == SDL_TOUCH_MOUSEID) ? SDL_SCANCODE_RETURN : SDL_SCANCODE_BACKSPACE;
 						} else {
 							mouse_clicked = true;
 						}

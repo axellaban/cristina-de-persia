@@ -53,7 +53,7 @@ webbuild/.stage/
 *.i*86
 *.x86_64
 *.hex
-prince
+/prince
 !data/PRINCE/
 
 # Debug files

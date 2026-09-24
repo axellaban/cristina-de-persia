@@ -28,10 +28,13 @@ Para probarla localmente: `python3 -m http.server 8000 --directory web` y abrir 
 | Teclado | Celular | Acción |
 |---|---|---|
 | Flechas | Cruceta (también en diagonal) | Moverse, saltar, agacharse |
+| ↑ | Botón *saltar* | Saltar |
 | Shift | Botón *acción* | Agarrarse, tomar pociones, pelear |
-| ↑ | Botón *salto* | Saltar |
-| Esc | *pausa* | Pausa |
-| Enter | *empezar* / tocar la pantalla | Empezar, pasar textos |
+| Esc | Botón ☰ (arriba a la derecha) | Menú de pausa |
+| Enter | Tocar la pantalla | Empezar, pasar textos, reintentar al morir |
+
+En iPhone el navegador no permite pantalla completa; para jugar sin barras hay que usar
+*Compartir → Agregar a inicio* y abrir el juego desde el ícono (el botón de pantalla completa lo explica).
 
 ---
 
