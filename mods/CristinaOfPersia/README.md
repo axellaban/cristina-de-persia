@@ -7,8 +7,8 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 | El príncipe | Cristina: melena castaña con flequillo, labios rojos, traje azul y la banda presidencial celeste y blanca con el sol de mayo |
 | Tomar una poción | Cristina toma de la petaca y se convierte un rato en Bullrich borracha (y se tambalea) |
 | La espada (en la mano y en el piso) | El bastón presidencial (puño dorado, borla, contera) |
-| La princesa | Máximo: pelo enrulado, barba, camiseta de Racing de manga corta, jean y zapatillas |
-| Jafar, el visir | Mauricio: canoso, afeitado y sonriente, traje azul, camisa celeste y corbata amarilla; al entrar en escena suben globos amarillos |
+| La princesa | Máximo: pelo entrecano algo largo, bigote y barba corta, pancita, campera celeste con franjas blancas, jean y zapatillas |
+| Jafar, el visir | Mauricio: pelo gris, ojos celestes, chaleco azul, camisa celeste arremangada, pantalón beige, cinturón marrón y capa bordó; al entrar en escena suben globos amarillos |
 | Los guardias (y el guardia gordo) | Bufones, como el comodín: gorro de dos puntas con cascabeles, gorguera, jubón rojo con rombos de arlequín (el color de los rombos cambia según lo fuertes que son), calzas amarillas y zapatos enroscados |
 | La espada de los guardias | Una trompeta dorada (Mauricio y el esqueleto siguen con espada) |
 | Pociones chica / grande | Petaca / botella de whisky (calabozo) o de vodka (palacio) |
@@ -42,6 +42,19 @@ código (`src/`). Van sin tildes ni ñ porque las fuentes del juego no las tiene
 técnicas dentro de "OPCIONES" siguen en inglés.
 
 ## Regenerar los gráficos
+
+Máximo usa un perfil dibujado píxel a píxel y coordenadas de pose explícitas
+(`POSES` en `make_maximo.py`), incluidas las escenas sentado y el abrazo final.
+Mauricio conserva las piernas y la capa animadas del visir, con un perfil,
+chaleco y mangas propios. Todos los PNG mantienen las dimensiones de su recurso
+original, paleta indexada y transparencia en el índice 0.
+
+Las pruebas verifican las dimensiones, la transparencia, los efectos de combate
+y que los PNG publicados coincidan con los generadores:
+
+```sh
+python3 -m unittest discover -s mods/CristinaOfPersia/tools -p 'test_*.py' -v
+```
 
 Todo se genera por script a partir de los originales de `data/` (Python 3 + Pillow):
 

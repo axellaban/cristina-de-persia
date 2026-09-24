@@ -35,7 +35,7 @@ COLORS = {
     HAIR_HI: (164, 92, 52),    # brillo caoba
     EYE: (30, 14, 18),         # ojo delineado
     LIPS: (206, 26, 56),       # labios rojos
-    CLOTH: (44, 56, 142),      # traje azul
+    CLOTH: (40, 68, 160),      # traje azul
     CLOTH_EDGE: (26, 32, 92),  # sombra del traje
     CLOTH_HI: (84, 104, 196),  # brillo del traje (hombros)
     SLEEVE_D: (26, 32, 92),
@@ -48,7 +48,7 @@ COLORS = {
     SUN_D: (196, 136, 20),
 }
 
-HAIR_LEN = 10   # cuánto baja la melena por la espalda
+HAIR_LEN = 7    # melena hasta los hombros, sin tapar la banda
 SASH_ROWS = 12
 PAINTABLE = {T, CLOTH, CLOTH_EDGE, CLOTH_HI}
 
@@ -201,7 +201,7 @@ def sash(px, w, h, neck, back):
         t = k / n
         front, rear = (lo, hi) if back > 0 else (hi, lo)
         x = round(front + (rear - front) * t)
-        for dx, col in ((0, SASH_BLUE), (back, SASH_WHITE), (2 * back, SASH_BLUE)):
+        for dx, col in ((0, SASH_BLUE), (back, SASH_WHITE)):
             xx = x + dx
             if 0 <= xx < w and px[xx, y] in (CLOTH, CLOTH_EDGE, CLOTH_HI, SLEEVE_D):
                 px[xx, y] = col
@@ -209,7 +209,7 @@ def sash(px, w, h, neck, back):
     # el sol de mayo, donde la banda llega a la cadera
     if last:
         sx, sy = last
-        for dx, dy, col in ((0, 0, SUN), (0, -1, SUN), (-back, 0, SUN_D), (back, 0, SUN_D)):
+        for dx, dy, col in ((0, 0, SUN), (0, -1, SUN_D)):
             xx, yy = sx + dx, sy + dy
             if 0 <= xx < w and 0 <= yy < h and px[xx, yy] not in (T, SKIN, SKIN_D):
                 px[xx, yy] = col
