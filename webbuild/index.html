@@ -116,20 +116,32 @@
   body.standalone #btn-full { display: none; }
   body.is-full #btn-full { display: none; }
 
-  /* carga: sólo mientras se descarga; el juego arranca solo */
+  /* carga: la imagen entera (nunca recortada), con la misma imagen borrosa de fondo
+     llenando lo que sobra a los costados, y el texto en una franja abajo */
   #loading {
-    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-    background: #000 url(promo.png) center/cover no-repeat;
+    position: fixed; inset: 0; overflow: hidden; background: #000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    padding: max(8px, var(--safe-t)) max(8px, var(--safe-r)) max(8px, var(--safe-b)) max(8px, var(--safe-l));
+    box-sizing: border-box;
   }
-  #loading .box { background: rgba(0,0,0,0.72); padding: 14px 24px; border-radius: 12px; text-align: center; max-width: 80vw; }
-  #loading h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: 1px; }
-  #loading p { margin: 4px 0; font-size: 14px; opacity: 0.85; }
-  #bar { width: 240px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin: 10px auto 0; }
+  #loading::before {
+    content: ""; position: absolute; inset: -40px;
+    background: url(promo.png) center/cover no-repeat; filter: blur(22px) brightness(0.4);
+  }
+  #loading .poster {
+    position: relative; display: block; min-height: 0; flex: 0 1 auto;
+    max-width: 100%; max-height: calc(100% - 64px); width: auto; height: auto;
+    border-radius: 6px; box-shadow: 0 6px 30px rgba(0, 0, 0, 0.6);
+  }
+  #loading .box { position: relative; text-align: center; max-width: 92vw; }
+  #loading p { margin: 2px 0; font-size: 13px; opacity: 0.8; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  #bar { width: 240px; max-width: 70vw; height: 6px; background: #333; border-radius: 3px; overflow: hidden; margin: 6px auto 2px; }
   #bar div { height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
   /* listo para jugar: toda la pantalla es el botón (el sonido sólo arranca con un toque) */
   #loading.ready { cursor: pointer; }
   #loading.ready #bar { display: none; }
-  #loading.ready #status { color: var(--accent); font-weight: 700; font-size: 17px; opacity: 1; animation: pulse 1.4s ease-in-out infinite; }
+  #loading.ready #status { color: var(--accent); font-weight: 700; font-size: 18px; opacity: 1; animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: 0.45; } }
   svg.share {
     display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em;
@@ -234,11 +246,12 @@
 </div>
 
 <div id="loading">
+  <img class="poster" src="promo.png" width="1280" height="720" alt="Cristina of Persia: Cristina con el bastón, Mauricio con sus globos y Máximo en el palacio">
   <div class="box">
-    <h1>Cristina of Persia</h1>
-    <p>Una parodia argentina · a game by Axel Laban &amp; Jordan Mechner</p>
+    <h1 class="sr-only">Cristina of Persia</h1>
     <div id="bar"><div></div></div>
     <p id="status">Cargando...</p>
+    <p>Una parodia argentina · a game by Axel Laban &amp; Jordan Mechner</p>
   </div>
 </div>
 
