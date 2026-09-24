@@ -5,7 +5,7 @@ A game by Axel Laban Arzubi.
 
 ![Cristina of Persia](mods/CristinaOfPersia/promo.png)
 
-- **Jugar en el navegador o en el celular (en horizontal):** la carpeta `web/` es el sitio listo para publicar
+- **Jugar en el navegador o en el celular (horizontal o vertical):** la carpeta `web/` es el sitio listo para publicar
   (Vercel la sirve tal cual, ver `vercel.json`).
 - **Jugar en la compu:** compilar `prince` (ver más abajo) y abrirlo; `SDLPoP.ini` ya apunta al mod
   (`levelset = CristinaOfPersia`).
@@ -20,8 +20,20 @@ Se compila a WebAssembly con Emscripten (`brew install emscripten`):
 sh webbuild/build.sh
 ```
 
-Eso deja en `web/` el `index.html` (con controles táctiles), `prince.js`, `prince.wasm` y `prince.data`.
+Eso deja en `web/` el `index.html` (con controles táctiles), `sw.js`, `prince.js`, `prince.wasm` y `prince.data`.
 Para probarla localmente: `python3 -m http.server 8000 --directory web` y abrir http://localhost:8000.
+
+Qué tiene la versión web (distinta de la de compu en `webbuild/SDLPoP.ini`):
+
+- **Sin límite de tiempo** y con las correcciones de SDLPoP activadas (`use_fixes_and_enhancements`).
+- **Continuar:** el juego guarda solo al empezar cada nivel (desde el 2) y en el título ofrece seguir.
+  Las partidas, las mejores marcas y las opciones quedan guardadas en el navegador (IndexedDB).
+- **Sin conexión:** `sw.js` guarda el juego en el dispositivo; instalado como app abre al instante.
+- **Versiones:** `build.sh` le agrega `?v=...` a los archivos del juego, así después de un deploy el
+  navegador nunca mezcla archivos viejos y nuevos (`vercel.json` los guarda en caché un año).
+- En el navegador no hay opción "Salir" (dejaría la página en negro).
+
+Una acción de GitHub (`.github/workflows/compilar.yml`) compila las dos versiones en cada cambio.
 
 ### Controles
 

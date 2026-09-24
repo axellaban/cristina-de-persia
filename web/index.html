@@ -4,11 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Cristina of Persia</title>
-<meta name="description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular (en horizontal).">
+<meta name="description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular.">
+<link rel="canonical" href="https://cristina-de-persia.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://cristina-de-persia.vercel.app/">
+<meta property="og:site_name" content="Cristina of Persia">
 <meta property="og:title" content="Cristina of Persia">
 <meta property="og:description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular.">
-<meta property="og:image" content="promo.png">
+<meta property="og:image" content="https://cristina-de-persia.vercel.app/promo.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
+<meta property="og:image:alt" content="Cristina of Persia: Cristina con el bastón, Macri y Máximo en el palacio">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cristina of Persia">
+<meta name="twitter:description" content="Parodia argentina de Prince of Persia. Jugalo en el navegador o en el celular.">
+<meta name="twitter:image" content="https://cristina-de-persia.vercel.app/promo.png">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -155,15 +166,38 @@
     font: inherit; padding: 8px 22px; border-radius: 20px; border: 0; background: var(--accent); color: #000;
   }
 
-  /* girá el celular */
-  #rotate {
-    display: none; position: fixed; inset: 0; background: #000; z-index: 10;
-    flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px;
+  /* "Continuar": en el título, si hay una partida guardada */
+  #continue {
+    display: none; position: fixed; z-index: 4; left: 50%; transform: translateX(-50%);
+    bottom: max(18px, var(--safe-b)); padding: 10px 22px; border-radius: 24px; border: 0; cursor: pointer;
+    background: var(--accent); color: #000; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    font: 700 16px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif; white-space: nowrap;
   }
-  #rotate .phone { font-size: 64px; animation: turn 1.6s ease-in-out infinite; }
-  @keyframes turn { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+  #continue small { display: block; font-weight: 500; font-size: 12px; }
+  #continue.show { display: block; }
+
+  /* celular en vertical: el juego arriba y los controles abajo */
   @media (orientation: portrait) {
-    body.touch #rotate { display: flex; }
+    body.touch #stage { top: var(--safe-t); height: calc(var(--w) * 0.625); }
+    body.touch #controls {
+      --pad: min(48vw, 220px);
+      --b: min(24vw, 110px);
+      --edge-b: max(28px, calc(var(--safe-b) + 14px));
+    }
+    body.touch #btn-action { right: var(--edge-r); bottom: calc(var(--edge-b) + var(--b) * 1.1); }
+    body.touch #btn-jump { bottom: var(--edge-b); }
+    /* debajo del juego: "Continuar" a la izquierda y los íconos a la derecha; el cartelito más abajo */
+    body.touch .corner { top: calc(var(--safe-t) + var(--w) * 0.625 + 12px); }
+    body.touch #continue {
+      bottom: auto; top: calc(var(--safe-t) + var(--w) * 0.625 + 12px); left: 16px; transform: none;
+      max-width: calc(var(--w) - 150px); padding: 9px 16px; font-size: 14px;
+    }
+    body.touch #continue small { display: none; }
+    body.touch #toast {
+      top: calc(var(--safe-t) + var(--w) * 0.625 + 68px); left: 16px; transform: none;
+      width: calc(var(--w) - 32px); max-width: none; flex-wrap: wrap; font-size: 12px; row-gap: 6px;
+    }
+    body.touch #toast .msg { flex-basis: 100%; }
   }
 </style>
 </head>
@@ -228,10 +262,7 @@
   </div>
 </div>
 
-<div id="rotate">
-  <div class="phone">📱</div>
-  <p>Girá el celular para jugar</p>
-</div>
+<button id="continue"><span id="continue-text">Continuar</span><small>o tocá la pantalla para empezar de nuevo</small></button>
 
 <script>
   "use strict";
@@ -385,7 +416,9 @@
     if (!req) { if (tipIfUnsupported) showTip(); return; }
     try {
       Promise.resolve(req.call(el, { navigationUI: "hide" })).then(() => {
-        if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {});
+        if (screen.orientation && screen.orientation.lock && matchMedia("(orientation: landscape)").matches) {
+          screen.orientation.lock("landscape").catch(() => {});
+        }
       }).catch(() => { if (tipIfUnsupported) showTip(); });
     } catch (err) { if (tipIfUnsupported) showTip(); }
   }
@@ -444,9 +477,60 @@
 
   // ---- Emscripten ----
   const bar = document.querySelector("#bar div"), status = document.getElementById("status");
+  // Los guardados (partidas, mejores marcas, opciones) viven en $HOME/.SDLPoP: se guardan en el
+  // navegador (IndexedDB) para que no se pierdan al cerrar la página.
+  const SAVE_DIR = "/home/web_user/.SDLPoP";
+  const SAVE_FILE = SAVE_DIR + "/CristinaOfPersia/PRINCE.SAV";
+  let syncing = false, savesReady = false;
+  function saveToBrowser() {
+    if (!savesReady || syncing) return;
+    syncing = true;
+    Module.FS.syncfs(false, () => { syncing = false; });
+  }
+  setInterval(saveToBrowser, 4000);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) saveToBrowser(); });
+  window.addEventListener("pagehide", saveToBrowser);
+
+  // "Continuar": el juego guarda solo al empezar cada nivel (desde el 2); en el título se ofrece seguir.
+  const continueBtn = document.getElementById("continue");
+  function savedLevel() {
+    try {
+      const data = Module.FS.readFile(SAVE_FILE);
+      const level = data[4] | (data[5] << 8);
+      return data.length >= 8 && level >= 1 && level <= 14 ? level : 0;
+    } catch (err) { return 0; }
+  }
+  continueBtn.addEventListener("click", () => {
+    unlockAudio();
+    continueBtn.classList.remove("show");
+    Module._web_continue();
+    Module.canvas.focus();
+  });
+
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
+    locateFile: (path) => path + "?v=1914290597",
+    preRun: [() => {
+      const FS = Module.FS;
+      try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
+      try {
+        FS.mount(FS.filesystems.IDBFS, {}, SAVE_DIR);
+        Module.addRunDependency("saves");
+        FS.syncfs(true, () => { savesReady = true; Module.removeRunDependency("saves"); });
+      } catch (err) { console.warn("sin guardado en el navegador", err); }
+    }],
+    // 0: título e intro; si no, el nivel que se está jugando
+    onGameState(level) {
+      const saved = level === 0 ? savedLevel() : 0;
+      if (saved >= 2) {
+        document.getElementById("continue-text").textContent = "Continuar · nivel " + saved;
+        continueBtn.classList.add("show");
+      } else {
+        continueBtn.classList.remove("show");
+      }
+      if (level !== 0) saveToBrowser();
+    },
     setStatus(text) {
       const m = text && text.match(/\((\d+(\.\d+)?)\/(\d+)\)/);
       if (m) bar.style.width = (100 * m[1] / m[3]) + "%";
@@ -468,6 +552,12 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js"></script>
+<script async src="prince.js?v=1914290597"></script>
+<script>
+  // sin conexión y carga instantánea (sobre todo instalado como app)
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+</script>
 </body>
 </html>
