@@ -2120,6 +2120,13 @@ void add_sword_to_objtable() {
 				) {
 					obj_id += N_SWORD_IMAGES;
 				}
+				// And a third set for the common guards and the fat guard (not the skeleton or the vizier).
+				else if (Char.charid == charid_2_guard &&
+					(custom->tbl_guard_type[current_level] == 0 || custom->tbl_guard_type[current_level] == 1) &&
+					sword_chtab != NULL && sword_chtab->n_images >= 3 * N_SWORD_IMAGES
+				) {
+					obj_id += 2 * N_SWORD_IMAGES;
+				}
 				obj_x = calc_screen_x_coord(obj_x);
 				obj_dx_forward(sword_tbl[sword_frame].x);
 				obj_y += sword_tbl[sword_frame].y;

@@ -173,7 +173,8 @@ def main():
             os.remove(stale)  # versiones viejas del mod que pisaban la espada
     # misma paleta que el original, con el doble de imágenes
     pal = bytearray(open(os.path.join(SRC, "res700.pal"), "rb").read())
-    pal[0] = 2 * n
+    # si ya están las trompetas de los bufones (make_trumpet.py), la tercera tanda sigue
+    pal[0] = 3 * n if os.path.exists(os.path.join(DST, f"res{701 + 2 * n}.png")) else 2 * n
     open(os.path.join(DST, "res700.pal"), "wb").write(pal)
     print(f"{n} frames -> {DST} (res{701 + n}-{700 + 2 * n})")
 

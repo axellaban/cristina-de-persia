@@ -2859,6 +2859,29 @@ void load_from_opendats_metadata(int resource_id, const char* extension, FILE** 
 	// Go through all open DAT files.
 	for (dat_type* pointer = dat_chain_ptr; fp == NULL && pointer != NULL; pointer = pointer->next_dat) {
 		*out_pointer = pointer;
+		// A mod's folder wins even over an original DAT file that has the same resource
+		// (for example data/GUARD.DAT), so mods can replace single images of it.
+		if (pointer->handle != NULL && use_custom_levelset && !skip_mod_data_files) {
+			char name_no_ext[POP_MAX_PATH];
+			snprintf_check(name_no_ext, sizeof(name_no_ext), "%s", pointer->filename);
+			size_t name_len = strlen(name_no_ext);
+			if (name_len >= 5 && name_no_ext[name_len-4] == '.') {
+				name_no_ext[name_len-4] = '\0';
+			}
+			char mod_filename[POP_MAX_PATH];
+			snprintf_check(mod_filename, sizeof(mod_filename), "%s/data/%s/res%d.%s", mod_data_path, name_no_ext, resource_id, extension);
+			fp = fopen(locate_file(mod_filename), "rb");
+			if (fp != NULL) {
+				struct stat buf;
+				if (fstat(fileno(fp), &buf) == 0) {
+					*result = data_directory;
+					*size = (int)buf.st_size;
+					break;
+				}
+				fclose(fp);
+				fp = NULL;
+			}
+		}
 		if (pointer->handle != NULL) {
 			// If it's an actual DAT file:
 			fp = pointer->handle;

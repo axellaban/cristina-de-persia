@@ -5,12 +5,13 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 | Original | En el mod |
 |---|---|
 | El príncipe | Cristina: melena castaña con flequillo, labios rojos, traje azul y la banda presidencial celeste y blanca con el sol de mayo |
-| Tomar una poción | Cristina se convierte un rato en Bullrich borracha (y se tambalea) |
+| Tomar una poción | Cristina toma de la petaca y se convierte un rato en Bullrich borracha (y se tambalea) |
 | La espada (en la mano y en el piso) | El bastón presidencial (puño dorado, borla, contera) |
 | La princesa | Máximo: pelo enrulado, barba, camiseta de Racing de manga corta, jean y zapatillas |
 | Jafar, el visir | Mauricio: canoso, afeitado y sonriente, traje azul, camisa celeste y corbata amarilla; al entrar en escena suben globos amarillos |
-| Los guardias (y el guardia gordo) | Granaderos: morrión con penacho, casaca azul con cuello de color y pantalón blanco |
-| Pociones chica / grande | Mate / termo |
+| Los guardias (y el guardia gordo) | Bufones, como el comodín: gorro de dos puntas con cascabeles, gorguera, jubón rojo con rombos de arlequín (el color de los rombos cambia según lo fuertes que son), calzas amarillas y zapatos enroscados |
+| La espada de los guardias | Una trompeta dorada (Mauricio y el esqueleto siguen con espada) |
+| Pociones chica / grande | Petaca / botella de whisky (calabozo) o de vodka (palacio) |
 | Pinches | Palas, muchas palas, con un cartel del FMI |
 | Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban & Jordan Mechner" |
 
@@ -27,7 +28,8 @@ y abrir `prince` (o `Jugar_Prince_of_Persia.command` en Mac).
 Algunas cosas necesitan el `prince` compilado con los cambios de este repo
 (con un SDLPoP sin cambios el mod igual funciona, pero sin estos extras):
 
-- bastón sólo para Cristina, espada para los guardias (`add_sword_to_objtable`, src/seg006.c)
+- bastón sólo para Cristina, trompeta para los bufones, espada para Mauricio y el esqueleto
+  (`add_sword_to_objtable`, src/seg006.c)
 - Bullrich al tomar una poción (`id_chtab_10_kid_alt`, `kid_alt_time`)
 - globos amarillos en la intro (`draw_balloons`, src/seg001.c)
 - cartel del FMI en los pinches (`SPIKE_SIGN_IMAGE`, src/seg008.c)
@@ -51,11 +53,13 @@ python3 tools/make_all.py
 |---|---|
 | `make_kid.py` | Cristina (`KID/res401-619`) |
 | `make_bullrich.py` | Bullrich borracha (`KID/res1401-1619` + `res1400.pal`) |
+| `make_flask.py` | La petaca en la mano al tomar (`KID/res593-607`, `res1593-1607`) |
 | `make_baton.py` | Bastón (`PRINCE/res735-768` + `res700.pal`) |
-| `make_items.py` | Bastón en el piso, mate, termo y cartel del FMI (`PRINCE/res160-165,174` + `res150.pal`) |
+| `make_items.py` | Bastón en el piso, petaca, whisky, vodka y cartel del FMI (`PRINCE/res160-165,174` + `res150.pal`) |
 | `make_maximo.py` | Máximo y el abrazo final (`PV/res801-817`, `res901-930`) |
 | `make_macri.py` | Mauricio villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
-| `make_guards.py` | Granaderos: paletas (`PRINCE/res10.bin`) y morrión (`GUARD/res751-784`, `FAT/res751-784`) |
+| `make_bufones.py` | Bufones: paletas (`PRINCE/res10.bin`) y sprites (`GUARD/res751-784`, `FAT/res751-784`) |
+| `make_trumpet.py` | Trompeta de los bufones (`PRINCE/res769-802` + `res700.pal`) |
 | `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`; usa fuentes de macOS) |
 | `make_promo.py` | La imagen promocional (`promo.png`), con los sprites del juego |
 | `make_icon.py` | Favicon e íconos de la app web (`webbuild/favicon*`, `icon-*.png`, `apple-touch-icon.png`) |

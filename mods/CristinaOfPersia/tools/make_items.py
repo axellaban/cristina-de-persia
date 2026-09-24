@@ -2,12 +2,13 @@
 """Objetos del mundo (data/PRINCE, grupo 150):
 
 - res160 / res161: la espada tirada en el piso (y su destello) -> bastón presidencial
-- res162 / res164: poción chica (calabozo / palacio) -> mate con bombilla
-- res163 / res165: poción grande (calabozo / palacio) -> termo verde
+- res162 / res164: poción chica (calabozo / palacio) -> petaca de metal
+- res163: poción grande del calabozo -> botella de whisky
+- res165: poción grande del palacio -> botella de vodka
 - res174: cartel del FMI clavado entre los pinches (imagen nueva; el juego la dibuja
   si res150.pal declara 24 imágenes, ver draw_tile_anim en src/seg008.c)
-Las burbujas de colores que salen de las pociones las sigue dibujando el juego:
-ahora parecen el vapor del mate.
+Las burbujas de colores que salen de las pociones las sigue dibujando el juego,
+saliendo del pico de cada botella: el color sigue diciendo qué hace cada una.
 
 Arte hecho a mano, píxel por píxel, en el mismo tamaño que el original.
 """
@@ -22,14 +23,18 @@ PALETTE = {
     ".": (0, 0, 0),          # 0 transparente
     "1": (214, 218, 228),    # plata
     "2": (132, 136, 150),    # plata oscura
-    "3": (88, 50, 26),       # calabaza sombra
-    "4": (138, 84, 40),      # calabaza
-    "5": (186, 126, 64),     # calabaza brillo
-    "6": (98, 142, 40),      # yerba
-    "7": (150, 190, 64),     # yerba clara
-    "g": (38, 112, 62),      # termo verde
-    "G": (86, 164, 96),      # termo brillo
-    "s": (22, 70, 40),       # termo sombra
+    "3": (72, 44, 26),       # cuero sombra
+    "4": (122, 76, 40),      # cuero
+    "5": (246, 250, 255),    # brillo
+    "6": (86, 90, 104),      # plata más oscura
+    "a": (200, 118, 26),     # whisky
+    "A": (244, 178, 70),     # whisky brillo
+    "m": (122, 62, 14),      # whisky sombra
+    "c": (184, 208, 222),    # vidrio
+    "C": (236, 246, 252),    # vidrio brillo
+    "v": (120, 146, 164),    # vidrio sombra
+    "r": (200, 30, 44),      # rojo
+    "l": (238, 226, 190),    # etiqueta crema
     "k": (30, 22, 22),       # caña de ébano
     "b": (104, 76, 60),      # brillo de la caña
     "o": (246, 206, 72),     # oro
@@ -41,36 +46,54 @@ PALETTE = {
 }
 KEYS = list(PALETTE)
 
-MATE = [
-    "......1...",
-    "......1...",
-    ".....1....",
-    "..7761767.",
-    ".11111111.",
-    ".45554443.",
-    "3455444443",
-    "3455444443",
-    "3445444433",
-    ".34444433.",
-    "..333333..",
+PETACA = [
+    "....66....",
+    "....12....",
+    ".22222222.",
+    "2511111112",
+    "2511111112",
+    "2511oo1126",
+    "2511oo1126",
+    "2511111126",
+    "2111111126",
+    "2111111266",
+    ".22666666.",
 ]
 
-TERMO = [
-    "...2222...",
-    "..211112..",
-    "..222222..",
-    "..sGggss..",
-    "..sGggss22",
-    "..sGggss.2",
-    "..sGggss.2",
-    "..sGggss.2",
-    "..sGggss.2",
-    "..sGggss22",
-    "..sGggss..",
-    "..sGggss..",
-    "..211112..",
-    "..sGggss..",
-    "..ssssss..",
+WHISKY = [
+    "....kk....",
+    "....kk....",
+    "....mA....",
+    "....mA....",
+    "...maAa...",
+    "..maaaAa..",
+    ".maaaaaAa.",
+    ".mllllllm.",
+    ".mlkkkklm.",
+    ".mllllllm.",
+    ".maaaaaAa.",
+    ".maaaaaAa.",
+    ".maaaaaAa.",
+    ".maaaaaAa.",
+    ".mmmmmmmm.",
+]
+
+VODKA = [
+    "....rr....",
+    "....rr....",
+    "....vC....",
+    "....vC....",
+    "....vC....",
+    "...vcCc...",
+    "..vccCcc..",
+    "..vccCcc..",
+    "..llllll..",
+    "..lrrrrl..",
+    "..llllll..",
+    "..vccCcc..",
+    "..vccCcc..",
+    "..vccCcc..",
+    "..vvvvvv..",
 ]
 
 BATON = [
@@ -145,9 +168,9 @@ def main():
                 sp[x, y] = white
     save(spark, 161)
     for res in (162, 164):
-        save(build(MATE), res)
-    for res in (163, 165):
-        save(build(TERMO), res)
+        save(build(PETACA), res)
+    save(build(WHISKY), 163)
+    save(build(VODKA), 165)
     save(build(FMI_SIGN), 174)
     pal = bytearray(open(os.path.join(SRC, "res150.pal"), "rb").read())
     pal[0] = 24  # una imagen más: el cartel
