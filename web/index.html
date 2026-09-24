@@ -132,6 +132,24 @@
     font-size: 15px; line-height: 1.45; opacity: 1 !important;
   }
   #ios-hint.show { display: block; }
+  /* pantallas bajas (celular en horizontal): todo más compacto para que entre sin cortarse */
+  #loading { overflow-y: auto; }
+  #loading .box { margin: auto; }
+  @media (max-height: 500px) {
+    #loading .box { padding: 10px 20px; }
+    #loading h1 { font-size: 22px; margin-bottom: 2px; }
+    #loading p { margin: 3px 0; font-size: 13px; }
+    #bar { margin-top: 6px; }
+    #start, #install { margin-top: 6px; font-size: 16px; padding: 7px 22px; }
+    #ios-hint { max-width: 480px; margin-top: 8px; padding: 7px 12px; font-size: 13px; line-height: 1.35; }
+    #ios-hint .again { margin-top: 3px; }
+    #ios-hint-done { margin-top: 5px; font-size: 12px; padding: 3px 10px; }
+  }
+  #ios-hint .again { margin-top: 6px; }
+  #ios-hint-done {
+    margin-top: 8px; font: inherit; font-size: 14px; padding: 4px 10px; border-radius: 14px; cursor: pointer;
+    background: transparent; color: var(--accent); border: 1px solid rgba(255, 214, 0, 0.5);
+  }
 
   /* cartel: en iPhone la pantalla completa se consigue agregando el juego a la pantalla de inicio */
   #tip {
@@ -197,8 +215,12 @@
     <div id="bar"><div></div></div>
     <p id="status">Cargando...</p>
     <button id="start">Jugar</button><button id="install">Instalar como app</button>
-    <p id="ios-hint">Para jugar en <b>pantalla completa</b>: tocá <svg class="share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6v10h12V10h-2"/></svg> <b>Compartir</b>
-      (a veces está dentro del menú <b>⋯</b>), elegí <b>Agregar a inicio</b> y abrí el juego desde el ícono.</p>
+    <div id="ios-hint">
+      <div>Para jugar en <b>pantalla completa</b>, agregalo a inicio: tocá <svg class="share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6v10h12V10h-2"/></svg> <b>Compartir</b>
+        (a veces está dentro del menú <b>⋯</b>) y elegí <b>Agregar a inicio</b>.</div>
+      <div class="again"><b>¿Ya lo agregaste?</b> Abrilo desde el ícono de <b>Cristina</b> en tu pantalla de inicio.</div>
+      <button id="ios-hint-done">Ya lo instalé, no mostrar más</button>
+    </div>
     <p class="hint" id="hint"></p>
   </div>
 </div>
@@ -212,6 +234,7 @@
       <li>Elegí <b>Agregar a inicio</b>.</li>
       <li>Abrí <b>Cristina</b> desde el ícono.</li>
     </ol>
+    <div style="margin-bottom: 14px"><b>¿Ya lo agregaste?</b> Abrilo desde el ícono de <b>Cristina</b> en tu pantalla de inicio.</div>
     <button id="tip-ok">Entendido</button>
   </div>
 </div>
@@ -229,7 +252,17 @@
   if (isStandalone) document.body.classList.add("standalone");
   // en iPhone no hay pantalla completa para páginas web: sólo agregándolo a la pantalla de inicio
   const isIPhone = /iPhone|iPod/.test(navigator.userAgent);
-  if (isIPhone && !isStandalone) document.getElementById("ios-hint").classList.add("show");
+  // Safari no puede saber si ya se agregó a inicio (la web app no comparte datos con Safari):
+  // quien ya lo instaló puede ocultar el aviso en este navegador.
+  const HINT_KEY = "cristina.ya-instalado";
+  let hintDismissed = false;
+  try { hintDismissed = localStorage.getItem(HINT_KEY) === "1"; } catch (err) {}
+  const iosHint = document.getElementById("ios-hint");
+  if (isIPhone && !isStandalone && !hintDismissed) iosHint.classList.add("show");
+  document.getElementById("ios-hint-done").addEventListener("click", () => {
+    iosHint.classList.remove("show");
+    try { localStorage.setItem(HINT_KEY, "1"); } catch (err) {}
+  });
   document.getElementById("hint").textContent = isTouch
     ? "Cruceta: moverse · saltar · acción: agarrar, tomar, pelear · tocá la pantalla para pasar los textos"
     : "Flechas: moverse · ↑: saltar · Shift: acción · Esc: menú";
