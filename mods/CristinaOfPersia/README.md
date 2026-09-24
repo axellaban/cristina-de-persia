@@ -11,7 +11,7 @@ Parodia argentina de *Prince of Persia* (Jordan Mechner, 1989) para SDLPoP.
 | Jafar, el visir | Macri: canoso, bigote, traje azul, corbata amarilla; al entrar en escena suben globos amarillos |
 | Los guardias | Granaderos |
 | Pociones chica / grande | Mate / termo |
-| Pinches | Con un cartel del FMI |
+| Pinches | Palas, muchas palas, con un cartel del FMI |
 | Título e historia | "Cristina of Persia", textos en castellano, "a game by Axel Laban Arzubi" |
 
 ## Jugar
@@ -52,6 +52,7 @@ python3 tools/make_all.py
 | `make_macri.py` | Macri villano en escenas y nivel 13, y el globo (`PV/res851-888,963`, `VIZIER/res751-784`) |
 | `make_guards.py` | Paletas de los Granaderos (`PRINCE/res10.bin`) |
 | `make_title.py` | Logo, créditos e historia (`TITLE/res42-44,52-54`) |
+| `make_shovels.py` | Palas en lugar de pinches (`VDUNGEON` y `VPALACE/res328-343`) |
 
 ![Cristina of Persia](promo.png)
 
