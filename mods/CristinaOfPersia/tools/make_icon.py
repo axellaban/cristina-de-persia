@@ -2,8 +2,8 @@
 """Íconos de la web: favicon, ícono de la app (Android/Chrome) y el de iPhone.
 
 Pixel art de 32x32: Cristina de frente, con la melena, el flequillo, los labios
-rojos, el traje azul y la banda presidencial, delante del sol de mayo, sobre las
-franjas celeste y blanca. La figura se dibuja en una capa aparte y se agranda sin
+rojos, el traje azul y la banda presidencial, empuñando el bastón presidencial
+como una espada, delante del sol de mayo, sobre las franjas celeste y blanca. La figura se dibuja en una capa aparte y se agranda sin
 suavizar; el fondo se pinta al tamaño final, así se puede dejar margen (el ícono
 "maskable" de Android necesita que lo importante quede en el 80% del centro).
 
@@ -32,6 +32,11 @@ C = {
     "traje": (44, 56, 142),
     "traje_d": (26, 32, 92),
     "borde": (22, 16, 26),
+    "baston": (30, 22, 22),
+    "baston_hi": (104, 76, 60),
+    "oro": (246, 206, 72),
+    "oro_d": (176, 124, 28),
+    "plata": (214, 220, 230),
 }
 
 
@@ -128,8 +133,33 @@ def figure():
     for x, y in ((23, 29), (24, 29), (23, 30), (24, 30)):
         put(x, y, "sol")
 
+    # el bastón presidencial en alto, como una espada: el puño cerrado a la derecha,
+    # la caña de ébano subiendo en diagonal delante del sol y la contera plateada arriba
+    top, bottom = (29, 0), (26, 21)
+    for y in range(top[1], bottom[1] + 1):
+        x = round(top[0] + (bottom[0] - top[0]) * (y - top[1]) / (bottom[1] - top[1]))
+        put(x - 1, y, "baston_hi")
+        put(x, y, "baston")
+        put(x + 1, y, "baston")
+    for x, y in ((28, 0), (29, 0), (30, 0), (28, 1), (29, 1), (30, 1)):  # contera plateada
+        put(x, y, "plata")
+    for x in range(25, 29):  # virola dorada, arriba de la mano
+        put(x, 18, "oro")
+    for x in range(24, 28):  # la mano cerrada sobre la caña, con los dedos marcados
+        for y in range(20, 24):
+            put(x, y, "piel_d" if y == 23 or x == 27 else "piel")
+    for x in (24, 25, 26):
+        put(x, 22 if x != 25 else 21, "piel_d")
+    for x, y in ((23, 24), (24, 24), (25, 24), (23, 25), (24, 25), (25, 25), (24, 26)):  # el puño dorado
+        put(x, y, "oro" if (x, y) in ((23, 24), (24, 24), (23, 25)) else "oro_d")
+    for x, y in ((26, 25), (26, 26), (27, 27), (27, 28)):  # cordón
+        put(x, y, "oro_d")
+    for x, y in ((26, 29), (27, 29), (28, 29), (26, 30), (27, 30), (28, 30), (27, 31)):  # borla
+        put(x, y, "oro" if y == 29 else "oro_d")
+
     # contorno oscuro de la figura (sin el sol), para que se lea en cualquier tamaño
-    body = {C[k] for k in C if k not in ("sol", "sol_d", "celeste", "blanco")}
+    # (la caña del bastón no lleva contorno: ya es oscura y quedaría gruesa)
+    body = {C[k] for k in C if k not in ("sol", "sol_d", "celeste", "blanco", "baston", "baston_hi", "plata")}
     solid = {(x, y) for y in range(N) for x in range(N) if px[x, y][3] and px[x, y][:3] in body}
     for x, y in list(solid):
         for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
