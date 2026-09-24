@@ -508,32 +508,49 @@
     const g = FONT.glyphs[ch];
     return g ? { w: g[0], rows: g[1], dy: 0 } : null;
   }
-  // negrita: cada letra se dibuja dos veces, corrida un píxel (y ocupa uno más)
-  function lineWidth(line, bold) {
-    let w = 0;
-    for (const ch of line) { const g = glyphOf(ch); if (g) w += g.w + FONT.gap + (bold ? 1 : 0); }
-    return w;
-  }
+  // Lo que va entre *asteriscos* sale en negrita: la letra se dibuja dos veces, corrida un
+  // píxel (y ocupa uno más).
   const STORY =
-    "El código original de Prince of Persia (1989) estuvo perdido durante 22 años. Su creador, " +
+    "El código original de *Prince of Persia (1989)* estuvo perdido durante 22 años. Su creador, " +
     "Jordan Mechner, lo daba por desaparecido hasta que, en 2012, su padre limpiando un armario " +
     "encontró una caja con tres viejos disquetes de Apple II.\n\n" +
     "Para no destruir los frágiles discos, archivistas expertos tuvieron que usar hardware " +
     "especializado para extraer los datos magnéticos. Tras este exitoso rescate, Mechner subió " +
-    "inmediatamente el código a GitHub para que jamás volviera a perderse.";
-  const STORY_END = "En 2026 un Argentino agarró el código, el resto es historia."; // en negrita
-  // corta en palabras para que cada renglón entre en el ancho (como find_linebreak)
-  function wrap(text, width, bold) {
+    "inmediatamente el código a GitHub para que jamás volviera a perderse.\n\n" +
+    "En 2026 un Argentino agarró el código, el resto es historia.";
+  // el texto como lista de [letra, negrita]
+  function parse(text) {
     const out = [];
-    for (const para of text.split("\n")) {
-      let line = "";
-      for (const word of para.split(" ")) {
-        const test = line ? line + " " + word : word;
-        if (line && lineWidth(test, bold) > width) { out.push(line); line = word; }
-        else line = test;
-      }
-      out.push(line);
+    let bold = false;
+    for (const ch of text) {
+      if (ch === "*") bold = !bold;
+      else out.push([ch, bold]);
     }
+    return out;
+  }
+  function lineWidth(line) {
+    let w = 0;
+    for (const [ch, bold] of line) { const g = glyphOf(ch); if (g) w += g.w + FONT.gap + (bold ? 1 : 0); }
+    return w;
+  }
+  // corta en palabras para que cada renglón entre en el ancho (como find_linebreak)
+  function wrap(chars, width) {
+    const out = [];
+    let line = [], word = [];
+    const flush = () => {
+      if (!word.length) return;
+      const test = line.length ? line.concat([[" ", word[0][1]]], word) : word;
+      if (line.length && lineWidth(test) > width) { out.push(line); line = word; }
+      else line = test;
+      word = [];
+    };
+    for (const c of chars) {
+      if (c[0] === "\n") { flush(); out.push(line); line = []; }
+      else if (c[0] === " ") flush();
+      else word.push(c);
+    }
+    flush();
+    out.push(line);
     return out;
   }
   // como draw_text en src/seg009.c: renglones centrados, y el bloque al medio de la pantalla.
@@ -547,8 +564,7 @@
     const W = portrait ? 184 : 320;
     // el texto de estado (cargando / tocá para jugar) no se muestra: sólo lo leen los lectores
     // de pantalla; tocar en cualquier lado arranca igual
-    const lines = wrap(STORY, W - 8).map((t) => [t, false]).concat([["", false]],
-      wrap(STORY_END, W - 8, true).map((t) => [t, true]));
+    const lines = wrap(parse(STORY), W - 8);
     const height = FONT.line * lines.length - 1;
     const H = portrait ? Math.max(200, height + 24) : 200;
     if (splash.width !== W || splash.height !== H) { splash.width = W; splash.height = H; }
@@ -559,9 +575,9 @@
     sctx.fillRect(0, 0, W, H);
     let y = Math.floor((H + 1) / 2) - Math.floor((height + 1) / 2);
     sctx.fillStyle = WHITE;
-    for (const [text, bold] of lines) {
-      let x = Math.floor(W / 2) - Math.floor(lineWidth(text, bold) / 2);
-      for (const ch of text) {
+    for (const line of lines) {
+      let x = Math.floor(W / 2) - Math.floor(lineWidth(line) / 2);
+      for (const [ch, bold] of line) {
         const g = glyphOf(ch);
         if (!g) continue;
         g.rows.forEach((bits, r) => {
