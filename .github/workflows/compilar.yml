@@ -1,0 +1,30 @@
+# Verifica en cada cambio que el juego siga compilando: la versión de compu y la web.
+name: Compilar
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar SDL2
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-dev libsdl2-image-dev
+      - name: Compilar
+        run: make -C src -j4
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+      - name: Compilar para el navegador
+        run: sh webbuild/build.sh
+      - name: Revisar el resultado
+        run: |
+          for f in index.html sw.js prince.js prince.wasm prince.data manifest.json; do
+            test -s "web/$f" || { echo "falta web/$f"; exit 1; }
+          done
+          ! grep -q __VERSION__ web/index.html web/sw.js
