@@ -90,7 +90,7 @@
   .pad .left { left: 5%; top: 42%; transform: rotate(-90deg); }
   .pad .right { right: 5%; top: 42%; transform: rotate(90deg); }
 
-  /* saltar y acción: mismo tamaño; saltar en el lugar donde descansa el pulgar */
+  /* saltar y Shift: mismo tamaño; saltar en el lugar donde descansa el pulgar */
   .act {
     position: fixed; width: var(--b); height: var(--b); border-radius: 50%; box-sizing: border-box;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
@@ -219,8 +219,8 @@
   <div class="act" id="btn-jump" data-key="ArrowUp" aria-label="saltar">
     <svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/><path d="M5 21h14"/></svg>saltar
   </div>
-  <div class="act" id="btn-action" data-key="ShiftLeft" aria-label="acción">
-    <svg viewBox="0 0 24 24"><path d="M5 19l11-11"/><path d="M16 8l3-3"/><path d="M13 5l6 6"/><path d="M4 16l4 4"/></svg>acción
+  <div class="act" id="btn-action" data-key="ShiftLeft" aria-label="Shift">
+    <svg viewBox="0 0 24 24"><path d="M12 3 3 12h5v8h8v-8h5z"/></svg>Shift
   </div>
 </div>
 
@@ -328,7 +328,7 @@
   }
   function tap(code) { press(code); setTimeout(() => release(code), 90); }
 
-  // botones que se mantienen apretados (saltar, acción)
+  // botones que se mantienen apretados (saltar, Shift)
   for (const el of document.querySelectorAll(".act[data-key]")) {
     const code = el.dataset.key;
     el.addEventListener("pointerdown", (e) => {
@@ -538,7 +538,7 @@
   var Module = {
     canvas: document.getElementById("canvas"),
     noInitialRun: true,
-    locateFile: (path) => path + "?v=32021183",
+    locateFile: (path) => path + "?v=1727035104",
     preRun: [() => {
       const FS = Module.FS;
       try { FS.mkdirTree(SAVE_DIR); } catch (err) {}
@@ -639,7 +639,7 @@
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";
   }).observe(document.querySelector("title"), { childList: true });
 </script>
-<script async src="prince.js?v=32021183"></script>
+<script async src="prince.js?v=1727035104"></script>
 <script>
   // sin conexión y carga instantánea (sobre todo instalado como app)
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {

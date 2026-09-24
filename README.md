@@ -41,7 +41,7 @@ Una acción de GitHub (`.github/workflows/compilar.yml`) compila las dos version
 |---|---|---|
 | Flechas | Cruceta (también en diagonal) | Moverse, saltar, agacharse |
 | ↑ | Botón *saltar* | Saltar |
-| Shift | Botón *acción* | Agarrarse, tomar pociones, pelear |
+| Shift | Botón *Shift* | Agarrarse, tomar pociones, pelear |
 | Esc | Botón ☰ (arriba a la derecha) | Menú de pausa |
 | Enter | Tocar la pantalla | Empezar, pasar textos, reintentar al morir |
 
