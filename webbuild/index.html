@@ -126,6 +126,11 @@
   #loading p { margin: 4px 0; font-size: 14px; opacity: 0.85; }
   #bar { width: 240px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin: 10px auto 0; }
   #bar div { height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+  /* listo para jugar: toda la pantalla es el botón (el sonido sólo arranca con un toque) */
+  #loading.ready { cursor: pointer; }
+  #loading.ready #bar { display: none; }
+  #loading.ready #status { color: var(--accent); font-weight: 700; font-size: 17px; opacity: 1; animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.45; } }
   svg.share {
     display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em;
     fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
@@ -456,8 +461,33 @@
       if (ctx && ctx.state !== "running") ctx.resume();
     } catch (err) {}
   }
-  for (const type of ["pointerdown", "pointerup", "touchend", "keydown"]) {
+  for (const type of ["pointerdown", "pointerup", "touchend", "keydown", "click"]) {
     window.addEventListener(type, unlockAudio, true);
+  }
+  // Al volver a la app (iPhone sobre todo), el audio puede quedar mudo aunque figure activo:
+  // se reinicia y vuelve a sonar solo o, si el sistema no lo deja, con el próximo toque.
+  function restartAudio() {
+    try {
+      const ctx = Module.SDL2 && Module.SDL2.audioContext;
+      if (!ctx || document.hidden) return;
+      Promise.resolve(ctx.suspend()).then(() => ctx.resume()).catch(() => {});
+    } catch (err) {}
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) restartAudio(); });
+  window.addEventListener("pageshow", (e) => { if (e.persisted) restartAudio(); });
+
+  // ¿El navegador deja sonar sin que el usuario haya tocado nada? (en la compu, casi siempre;
+  // en el celular y en la app instalada, no)
+  function canAutoplay() {
+    try {
+      if (navigator.getAutoplayPolicy) return navigator.getAutoplayPolicy("audiocontext") === "allowed";
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return true;
+      const test = new Ctx();
+      const ok = test.state === "running";
+      test.close();
+      return ok;
+    } catch (err) { return false; }
   }
   // el primer toque sobre el juego pide pantalla completa (donde el navegador lo permite)
   let triedAutoFull = false;
@@ -536,15 +566,37 @@
     },
     onRuntimeInitialized() {
       bar.style.width = "100%";
-      document.getElementById("loading").style.display = "none";
-      Module.canvas.focus();
-      gameStarted = true;
-      Module.callMain([]);
-      if (wantedToast) setTimeout(() => showToast(wantedToast), 1500);
+      if (canAutoplay()) {
+        startGame();
+        return;
+      }
+      // Hace falta un toque para que suene: si el juego arrancara solo, la música de la
+      // intro pasaría en silencio. Ese toque arranca el juego (y en Android, pantalla completa).
+      const loading = document.getElementById("loading");
+      loading.classList.add("ready");
+      status.textContent = isTouch ? "Tocá la pantalla para jugar" : "Hacé clic o apretá una tecla para jugar";
+      const go = (e) => {
+        if (e.type === "keydown" && ["Shift", "Control", "Alt", "Meta"].includes(e.key)) return;
+        loading.removeEventListener("click", go);
+        window.removeEventListener("keydown", go);
+        if (isTouch && !isStandalone) goFullscreen(false);
+        startGame();
+      };
+      loading.addEventListener("click", go);
+      window.addEventListener("keydown", go);
     },
     print: (t) => console.log(t),
     printErr: (t) => console.warn(t),
   };
+  function startGame() {
+    document.getElementById("loading").style.display = "none";
+    Module.canvas.focus();
+    gameStarted = true;
+    Module.callMain([]);  // dentro del toque: el audio de SDL nace habilitado
+    setTimeout(unlockAudio, 0);
+    if (wantedToast) setTimeout(() => showToast(wantedToast), 1500);
+  }
+
   // SDL le cambia el título a la pestaña; dejamos el del juego
   new MutationObserver(() => {
     if (document.title !== "Cristina of Persia") document.title = "Cristina of Persia";

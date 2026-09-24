@@ -1,6 +1,6 @@
 // Guarda el juego en el celular: abre al instante y funciona sin conexión.
-// build.sh reemplaza 2414813363; cada versión nueva usa su propia caché y borra las viejas.
-const VERSION = "2414813363";
+// build.sh reemplaza 1105401015; cada versión nueva usa su propia caché y borra las viejas.
+const VERSION = "1105401015";
 const CACHE = "cristina-" + VERSION;
 const FILES = [
   "./",
