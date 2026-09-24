@@ -1,19 +1,16 @@
-Música de la entrada de Mauricio
-================================
+Música del mod
+==============
 
-Cuando Mauricio (el villano) entra en la escena de la intro, el juego pone:
+Cuando Mauricio (el villano) entra en la escena de la intro suena la música
+original del juego, la amenazante.
+
+Si se quiere otra, se pone un fragmento en formato OGG en:
 
     mods/CristinaOfPersia/music/story_3_Jaffar_enters.ogg
 
-El que viene con el mod es una marcha de acto compuesta para el juego (melodía
-original, sin derechos de terceros), generada con:
-
-    python3 mods/CristinaOfPersia/tools/make_jingle.py
-
-Se puede reemplazar por otro fragmento en formato OGG con el mismo nombre.
 Unos 10 segundos alcanzan: es lo que dura la entrada. Ojo: si es un tema
-comercial (por ejemplo, uno de Tan Biónica), no conviene publicarlo en la
-versión web, porque es de acceso público y puede haber reclamos por derechos.
+comercial, no conviene publicarlo en la versión web, porque es de acceso
+público y puede haber reclamos por derechos.
 
 Para convertir un MP3 a OGG, con ffmpeg:
 
